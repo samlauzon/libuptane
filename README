@@ -34,11 +34,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  2. DEPENDENCIES 
  --------
  
-  This demo application makes use of; 
-    - cURL ( https://curl.haxx.se/ )
+  This demo application makes use of the following; 
+    - cURL ( https://curl.haxx.se/ ) for Web hooks 
+    - [Encoding library] ( http://someurl ) for Metadata Encoding
+    - can-utils ( https://github.com/linux-can/can-utils ) for CAN Interaction
     
    There are no conflicts in the above license as of time of authorship and all software used in this demo application share the same license philosophies. (Generally, all contain copies of the MIT license.) 
   
+   In addition, these libraries are interfaced through flexible wrapper code which may be easily modified to function with libraries of similar functionality. 
+   
  --------
  3. USAGE 
  --------
