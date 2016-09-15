@@ -1,7 +1,7 @@
 
- # An Uptane Client Library in C 
-  (With companion test application) 
- README File
+  An Uptane Client Library in C 
+ ============================
+  *With companion test application *
   
 This software is Copyright (c) 2016 Sam Lauzon <slauzon at umich.edu>, The Regents of the University of Michigan
  
@@ -10,11 +10,11 @@ This software is Copyright (c) 2016 Sam Lauzon <slauzon at umich.edu>, The Regen
  
  In accordance with the standard practices at the University of Michigan, this source code is released free of charge and without warranty as a contractual obligation to the funding party. All inquiries regarding usage should be directed to Sam Lauzon <slauzon at umich.edu>  
   
- -- NOT YET INTENDED FOR USE IN PRODUCTION ENVIRONMENTS AND MOSTLY INCOMPLETE -- 
+ ** NOT YET INTENDED FOR USE IN PRODUCTION ENVIRONMENTS AND MOSTLY INCOMPLETE ** 
  
- ----------
+ ------------------------------
   Contents 
- ----------
+
   1. License
   2. Dependencies 
   3. Usage
@@ -22,9 +22,8 @@ This software is Copyright (c) 2016 Sam Lauzon <slauzon at umich.edu>, The Regen
   
   
   
- -------
- 1. LICENSE 
- -------
+1. LICENSE 
+---------------------------
  
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -32,9 +31,10 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
- --------
- 2. DEPENDENCIES 
- --------
+
+
+2. DEPENDENCIES 
+--------------------------
  
   This demo application makes use of the following; 
     - cURL ( https://curl.haxx.se/ ) for Web hooks 
@@ -45,16 +45,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   
    In addition, these libraries are interfaced through flexible wrapper code which may be easily modified to function with libraries of similar functionality. 
    
- --------
- 3. USAGE 
- --------
+3. USAGE 
+-----------------------------
 
  make from the top level should create two outputs, libuptane.so and uptaneclient. 
    (On Win32, 3 outputs: libuptane.dll, libuptane.so and uptaneclient.exe - See NOTES)
    
- -----
- 4. NOTES
- -----
+4. NOTES
+-------------------------
    This software is a work in progress. It is not intended (yet) to be deployed in production environments. 
    
   Cygwin links against things called .dll. Compensations were made where possible to allow cygwin test environments.
