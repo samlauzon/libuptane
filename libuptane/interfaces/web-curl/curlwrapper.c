@@ -15,7 +15,7 @@ void curl_init( void )
     if(curl) 
     { 
        CURLcode result; 
-       curl_easy_setopt(curl, CURLOPT_URL, "https://uptane.umtri.umich.edu");
+       curl_easy_setopt(curl, CURLOPT_URL, "http://google.com");
        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
        result = curl_easy_perform(curl); 
        if( result == CURLE_OK ) 

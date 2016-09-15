@@ -1,0 +1,38 @@
+
+ README.interfaces
+
+  Wrapper interfaces are used by libuptane to interface implementation specific dependencies. 
+
+ This implementation is planned and undocumented. Refer to the wrapper code for interface specifics. 
+ All interfaces are currently subject to change at any time. 
+
+
+codec-der  
+ Provides metadata decoding in DER (Binary) formatting 
+ Status: Planned
+
+codec-json  
+ Provides metadata decoding in JSON format
+ Status: Planned (Nice to have)
+
+crypto-ed25519 
+ Provides ed25519 crypto verification, enc/dec 
+ Status: Planned
+
+crypto-openssl
+ Provides OpenSSL hooks for crypto verification, enc/dec
+ Status: Possibly, low priority
+
+data-sqlite  
+ Provides key and data storage in a sqlite database 
+ Status: Planned
+
+web-curl  
+ Provides cURL support for communiation with an uptane server
+ Status: Blocked 
+  -- Needs SSL Certificates
+
+web-static
+ Provides loopback/static data for internal communication testing
+ Status: Hack-ish
+
