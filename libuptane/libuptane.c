@@ -6,5 +6,6 @@
 void uptane_init( void )
 {
    fprintf(stderr, "I'm a library.\n");
+   curl_init(); 
 }
 
