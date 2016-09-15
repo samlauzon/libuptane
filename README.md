@@ -31,10 +31,12 @@ DEPENDENCIES
 
   This demo application makes use of the following; 
   - cURL ( https://curl.haxx.se/ ) for Web hooks
-  - [Encoding library] ( http://someurl ) for Metadata Encoding
+  - JSON-C for Metadata Encoding
   - can-utils ( https://github.com/linux-can/can-utils ) for CAN Interaction
 
  There are no conflicts in the above license as of time of authorship and all software used in this demo application share the same license philosophies. (Generally, all contain copies of the MIT license.)
+
+ There is an interface with companion instructions to allow anyone to wrap any external libraries being used to interact with servers, store/retrieve data and encode/decode metadata. This should also allow an implementation team to customize the HSM interactions to their specific interfaces, or interface with any existing OMA-DM libraries
 
  In addition, these libraries are interfaced through flexible wrapper code which may be easily modified to function with libraries of similar functionality.
 
