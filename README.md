@@ -1,5 +1,5 @@
 
- ##An Uptane Client Library in C##
+ ## An Uptane Client Library in C ##
   (With companion test application) 
  README File
   
