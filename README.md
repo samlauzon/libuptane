@@ -1,5 +1,6 @@
- n Uptane Client Library in C
+ An Uptane Client Library in C
  ============================
+
   *With companion test application*
 
 This software is Copyright (c) 2016 Sam Lauzon (slauzon at umich.edu), The Regents of the University of Michigan
@@ -13,7 +14,7 @@ This software is Copyright (c) 2016 Sam Lauzon (slauzon at umich.edu), The Regen
 
 
 
-LICENSE
+ LICENSE
  ---------------------------
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -31,18 +32,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   - [Encoding library] ( http://someurl ) for Metadata Encoding
   - can-utils ( https://github.com/linux-can/can-utils ) for CAN Interaction
 
-   There are no conflicts in the above license as of time of authorship and all software used in this demo application share the same license philosophies. (Generally, all contain copies of the MIT license.)
+ There are no conflicts in the above license as of time of authorship and all software used in this demo application share the same license philosophies. (Generally, all contain copies of the MIT license.)
 
-   In addition, these libraries are interfaced through flexible wrapper code which may be easily modified to function with libraries of similar functionality.
+ In addition, these libraries are interfaced through flexible wrapper code which may be easily modified to function with libraries of similar functionality.
 
- USAGE
- -----------------------------
+
+
+USAGE
+-----------------------------
 
  make from the top level should create two outputs, libuptane.so and uptaneclient.
    (On Win32, 3 outputs: libuptane.dll, libuptane.so and uptaneclient.exe - See NOTES)
 
- NOTES
- -------------------------
+NOTES
+-------------------------
    This software is a work in progress. It is not intended (yet) to be deployed in production environments.
 
   Cygwin links against things called .dll. Compensations were made where possible to allow cygwin test environments.
