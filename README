@@ -1,5 +1,5 @@
 
- An Uptane Client Library in C
+ ##An Uptane Client Library in C##
   (With companion test application) 
  README File
   
@@ -9,7 +9,9 @@ This software is Copyright (c) 2016 Sam Lauzon <slauzon at umich.edu>, The Regen
  http://uptane.umtri.umich.edu/ ^ http://uptane.github.io/ 
  
  In accordance with the standard practices at the University of Michigan, this source code is released free of charge and without warranty as a contractual obligation to the funding party. All inquiries regarding usage should be directed to Sam Lauzon <slauzon at umich.edu>  
-   
+  
+ -- NOT YET INTENDED FOR USE IN PRODUCTION ENVIRONMENTS AND MOSTLY INCOMPLETE -- 
+ 
  ----------
   Contents 
  ----------
