@@ -15,8 +15,9 @@ void curl_init( void )
     if(curl) 
     { 
        CURLcode result; 
-       curl_easy_setopt(curl, CURLOPT_URL, "http://google.com");
+       curl_easy_setopt(curl, CURLOPT_URL, "https://www.samlauzon.com");
        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+       curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0); // Bad. 
        result = curl_easy_perform(curl); 
        if( result == CURLE_OK ) 
        {

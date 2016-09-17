@@ -8,16 +8,16 @@
 ############
 # Add any wrappers below;
 #  WRAPPER_OBJS should be object/source files
-#  WRAPPER_LDFLAGS should be any external linkages 
+#  WRAPPER_LIBRARIES should be any external linkages 
 #  
 #### Wrappers
 #
 # web-curl
 #
 
-WRAPPER_OBJS += $(patsubst interfaces/web-curl/%.c,interfaces/web-curl/%.o,interfaces/web-curl/*.c) 
+WRAPPER_OBJS += $(patsubst interfaces/web-curl/%.c,interfaces/web-curl/%.o,$(wildcard interfaces/web-curl/*.c))  
 WRAPPER_CFLAGS += -Iinterfaces/web-curl 
-WRAPPER_LDFLAGS += -lcurl
+WRAPPER_LIBRARIES += -lcurl
 
 #
 # web-static 
@@ -31,14 +31,14 @@ WRAPPER_LDFLAGS += -lcurl
 
 CC = gcc
 CFLAGS = -c -Wall -fpic -I./include $(WRAPPER_CFLAGS)
-LDFLAGS = -shared $(WRAPPER_LDFLAGS) 
+LDFLAGS = -shared 
 OUTPUT = libuptane.so 
 
 OBJS := $(patsubst src/%.c,src/%.o,$(wildcard src/*.c)) $(WRAPPER_OBJS)
 
 libuptane: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS)
-	$(CC) $(LDFLAGS) -o $(OUTPUT) $(OBJS) 
+	$(CC) $(LDFLAGS) -o $(OUTPUT) $(OBJS) $(WRAPPER_LIBRARIES)
 	cp $(OUTPUT) ../   
 
 clean: 
