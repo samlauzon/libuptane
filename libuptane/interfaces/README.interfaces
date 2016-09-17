@@ -6,6 +6,22 @@
  This implementation is planned and undocumented. Refer to the wrapper code for interface specifics. 
  All interfaces are currently subject to change at any time. 
 
+In-Progress
+-------------
+
+web-curl  
+ Provides cURL support for communiation with an uptane server
+ Status: Blocked // Worked around
+  -- Needs SSL Certificates 
+    --> Workaround; Told cURL to ignore SSL faults ( Should Fix )
+
+web-static
+ Provides loopback/static data for internal communication testing
+ Status: Framework Functional
+
+Not-Yet-Started
+----------------
+
 
 codec-der  
  Provides metadata decoding in DER (Binary) formatting 
@@ -26,13 +42,4 @@ crypto-openssl
 data-sqlite  
  Provides key and data storage in a sqlite database 
  Status: Planned
-
-web-curl  
- Provides cURL support for communiation with an uptane server
- Status: Blocked 
-  -- Needs SSL Certificates
-
-web-static
- Provides loopback/static data for internal communication testing
- Status: Hack-ish
 
