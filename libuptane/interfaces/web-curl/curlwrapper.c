@@ -10,9 +10,9 @@ uint8_t is_running = 0;  // 1: Fetch active; 0: Fetch inactive;
 
 void *data_callback = NULL; // Data callback hook into the main application
 
-static size_t fetch_callback(void *contents, size_t size, size_t nmemb, void *userp)
+size_t fetch_callback(void *contents, size_t size, size_t nmemb, void *userp)
 {
-   debug_output("%s", contents);
+   debug_output("%s", (char *)contents);
    ((void (*)(void)) data_callback)(); // Call the callback in main application
 
    is_running = 0; 

@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "web.h"
+#include "staticwrapper.h"
 
 #define debug_output(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__) // Debug output
 

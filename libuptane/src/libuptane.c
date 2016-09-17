@@ -1,5 +1,6 @@
 
 #include "libuptane.h"
+#include "interfaces.h"
 
 #include <stdio.h>
 

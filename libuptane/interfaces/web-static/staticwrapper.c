@@ -14,8 +14,8 @@ void static_init( void *callback )
 void static_fini( void ) 
 {
    debug_output("Called static_fini\n");
-}   
-      
+} 
+
 void static_set_callback( void *callback ) 
 {
    data_callback = callback;
@@ -33,3 +33,4 @@ int static_fetch( const char *url )
    ((void (*)(void)) data_callback)(); // Call the callback in main application
    return 0;
 }
+

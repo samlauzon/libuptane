@@ -1,6 +1,7 @@
 //
 //   web.h
-//    implements the web interface for the "curl" wrapper
+//    All web wrappers must implement these functions
+//
 //
 
 #ifndef __web_h
