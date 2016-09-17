@@ -13,17 +13,19 @@
 #### Wrappers
 #
 # web-curl
-#
+## 
 
-WRAPPER_OBJS += $(patsubst interfaces/web-curl/%.c,interfaces/web-curl/%.o,$(wildcard interfaces/web-curl/*.c))  
-WRAPPER_CFLAGS += -Iinterfaces/web-curl 
-WRAPPER_LIBRARIES += -lcurl
+# WRAPPER_OBJS += $(patsubst interfaces/web-curl/%.c,interfaces/web-curl/%.o,$(wildcard interfaces/web-curl/*.c))  
+# WRAPPER_CFLAGS += -Iinterfaces/web-curl 
+# WRAPPER_LIBRARIES += -lcurl
 
 #
 # web-static 
-#
+##
 
-# WRAPPER_OBJS += $(pathsubst interfaces/web-static/%.c,interfaces/web-static/%.o,interfaes/web-static/*.c) 
+WRAPPER_OBJS += $(patsubst interfaces/web-static/%.c,interfaces/web-static/%.o,$(wildcard interfaces/web-static/*.c)) 
+WRAPPER_CFLAGS += -Iinterfaces/web-static 
+WRAPPER_LIBRARIES = 
 
 ########
 # Core Build things 

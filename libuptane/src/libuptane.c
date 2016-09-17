@@ -11,8 +11,8 @@ void webdata_callback( void )
 void uptane_init( void )
 {
    fprintf(stderr, "I'm a library.\n");
-   curl_init(webdata_callback); 
-   curl_fetch("https://www.samlauzon.com"); 
-
+   web_init(webdata_callback); 
+   web_fetch("https://www.samlauzon.com"); 
+   web_fini(); 
 }
 
