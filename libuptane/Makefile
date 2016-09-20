@@ -23,9 +23,9 @@ INTERFACE_LIBRARIES += -lcurl
 ########################
 # web-static 
 ########################
-# INTERFACE_OBJS += $(patsubst interfaces/web-static/%.c,interfaces/web-static/%.o,$(wildcard interfaces/web-static/*.c)) 
-# INTERFACE_CFLAGS += -Iinterfaces/web-static 
-# INTERFACE_LIBRARIES = 
+#INTERFACE_OBJS += $(patsubst interfaces/web-static/%.c,interfaces/web-static/%.o,$(wildcard interfaces/web-static/*.c)) 
+#INTERFACE_CFLAGS += -Iinterfaces/web-static 
+#INTERFACE_LIBRARIES = 
 
 
 ########################
@@ -43,7 +43,7 @@ OBJS := $(patsubst src/%.c,src/%.o,$(wildcard src/*.c)) $(INTERFACE_OBJS)
 libuptane: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS)
 	$(CC) $(LDFLAGS) -o $(OUTPUT) $(OBJS) $(INTERFACE_LIBRARIES)
-	cp $(OUTPUT) ../   
+	cp $(OUTPUT) ../  
 
 # Clean Rule
 clean: 
@@ -51,5 +51,9 @@ clean:
 
 # Default: Build library 
 all: $(libuptane) 
-   
+
+# Useless 
+.PHONY: version_bump
+version_bump:
+	awk -i inplace -v '/VERSION_BUILD/{gsub(/([0-9]+)/, ($$3 + 1) )}; 1' include/libuptane.h
 # end

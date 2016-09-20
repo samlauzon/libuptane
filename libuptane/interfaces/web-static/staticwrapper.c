@@ -30,7 +30,14 @@ void *static_get_callback(void)
 
 int static_fetch( const char *url )
 {
-   ((void (*)(void)) data_callback)(); // Call the callback in main application
+   // TODO: Read a file into an allocated array, pass to data_callback
+   const char *data = (char *)malloc(1);
+	strncpy(data, ".", 1); 
+
+   ((void (*)( char * )) data_callback)(data); // Call the callback in main application
+
+
    return 0;
 }
+
 
