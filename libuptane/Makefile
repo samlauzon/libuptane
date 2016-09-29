@@ -41,21 +41,24 @@ INTERFACE_LIBRARIES +=
 ########################
 # Definitions
 CC = gcc
-CFLAGS = -c -Wall -fpic -I./include -Iinterfaces/include $(INTERFACE_CFLAGS)
+CFLAGS = -Wall -fpic -I./include -Iinterfaces/include $(INTERFACE_CFLAGS)
 LDFLAGS = -shared 
 OUTPUT = libuptane.so 
 # Core library source + Interfaces
 OBJS := $(patsubst src/%.c,src/%.o,$(wildcard src/*.c)) $(INTERFACE_OBJS)
 
 # Library Build Rule
+%.o : %.c
+	$(CC) $(CFLAGS) -o $@ -c $< 
+
 libuptane: $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS)
 	$(CC) $(LDFLAGS) -o $(OUTPUT) $(OBJS) $(INTERFACE_LIBRARIES)
 	cp $(OUTPUT) ../  
 
+
 # Clean Rule
 clean: 
-	rm $(OUTPUT) $(OBJS) ../$(OUTPUT)
+	rm -f $(OUTPUT) $(OBJS) ../$(OUTPUT)
 
 # Default: Build library 
 all: $(libuptane) 

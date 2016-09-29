@@ -19,10 +19,13 @@ web-static
  Provides loopback/static data for internal communication testing
  Status: Framework Functional
 
+crypto-ed25519 
+ Provides ed25519 crypto verification, enc/dec, sha512
+ Status: Functional
+
+
 Not-Yet-Started
 ----------------
-
-
 codec-der  
  Provides metadata decoding in DER (Binary) formatting 
  Status: Planned
@@ -31,9 +34,6 @@ codec-json
  Provides metadata decoding in JSON format
  Status: Planned (Nice to have)
 
-crypto-ed25519 
- Provides ed25519 crypto verification, enc/dec 
- Status: Planned
 
 crypto-openssl
  Provides OpenSSL hooks for crypto verification, enc/dec
