@@ -1,6 +1,8 @@
 /*
  * SHA256 hash implementation and interface functions
  * Copyright (c) 2003-2011, Jouni Malinen <j@w1.fi>
+ *  Modified by Sam Lauzon <slauzon@umich.edu> for the Uptane Project
+ *
  *
  * This software may be distributed under the terms of the BSD license.
  */
