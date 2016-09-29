@@ -33,7 +33,8 @@ INTERFACE_LIBRARIES += -lcurl
 ########################
 INTERFACE_OBJS += $(patsubst interfaces/crypto-ed25519/%.c,interfaces/crypto-ed25519/%.o,$(wildcard interfaces/crypto-ed25519/*.c)) 
 INTERFACE_OBJS += $(patsubst interfaces/crypto-ed25519/libed25519/%.c,interfaces/crypto-ed25519/libed25519/%.o,$(wildcard interfaces/crypto-ed25519/libed25519/*.c)) 
-INTERFACE_CFLAGS += -Iinterfaces/crypto-ed25519 -Iinterfaces/crypto-ed25519/libed25519
+INTERFACE_OBJS += $(patsubst interfaces/crypto-ed25519/sha256/%.c,interfaces/crypto-ed25519/sha256/%.o,$(wildcard interfaces/crypto-ed25519/sha256/*.c)) 
+INTERFACE_CFLAGS += -Iinterfaces/crypto-ed25519 -Iinterfaces/crypto-ed25519/libed25519 -Iinterfaces/crypto-ed25519/sha256
 INTERFACE_LIBRARIES += 
 
 ########################

@@ -2,15 +2,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h> 
 
 #include "libuptane.h"
 #include "interfaces.h"
 
+#include "sha256.h" 
 #include "sha512.h"
 
 
 char ncsha512[1024] = { 0 }; 
-
+char ncsha256[1024] = { 0 }; 
 
 void webdata_callback( const char *data ) 
 {
@@ -19,11 +21,25 @@ void webdata_callback( const char *data )
 	
 	// Verified against http://hash.online-convert.com/sha512-generator
 	int p = sha512(data, strlen(data), &ncsha512); 
-	fprintf(stderr, "\n The sha512 of the data above is: ", ncsha512);  
+	fprintf(stderr, "\n The SHA512 is: ", ncsha512);  
 	for(int i = 0; i <= 63; i++) {
       fprintf(stderr, "%X", 0xFF & ncsha512[i]  ); 
    } 
+	fprintf(stderr, "\n"); 
+
+	 // Sha 256? 
+
+	struct sha256_state md; 
+	sha256_init( &md ); 
+	sha256_process( &md, data, strlen(data) ); 
+	sha256_done( &md, ncsha256 ); 
+
+	fprintf( stderr, " The SHA256 is: "); 
+	for(int i = 0; i <= 31; i++) { 
+		fprintf(stderr, "%X", 0xFF & ncsha256[i] ); 
+	}
 	fprintf(stderr, "\n\n"); 
+	
 
 	free( (void *) data); // was malloc'd in the wrapper.
 }
