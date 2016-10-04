@@ -42,7 +42,7 @@ INTERFACE_LIBRARIES +=
 ########################
 # Definitions
 CC = gcc
-CFLAGS = -Wall -fpic -I./include -Iinterfaces/include $(INTERFACE_CFLAGS)
+CFLAGS = -std=c11 -Wall -fpic -I./include -Iinterfaces/include $(INTERFACE_CFLAGS)
 LDFLAGS = -shared 
 OUTPUT = libuptane.so 
 # Core library source + Interfaces
