@@ -25,11 +25,14 @@ int main(int argc, char **argv)
 	assert(argc == 2);
 	char *filename = argv[1];
 	FILE *f = fopen(filename, "r");
-	assert(f);
+	if( f == NULL )
+	{
+		fprintf(stderr, "Cannot open file \"%s\" - Exiting.\n", filename);
+		exit(-1);
+	}
 
 	fseek(f, 0, SEEK_END);
 	int filesize = ftell(f);
-	printf("%s is %d bytes.\n", argv[1], filesize); 
 	buf = (char *) malloc((size_t)filesize + 1); 
 	memset(buf, 0, filesize + 1);
 	rewind(f); 
