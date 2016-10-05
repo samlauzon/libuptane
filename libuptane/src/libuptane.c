@@ -7,6 +7,8 @@
 #include "libuptane.h"
 #include "interfaces.h"
 
+#include "can.h"
+
 #include "sha256.h" 
 #include "sha512.h"
 
@@ -46,12 +48,14 @@ void webdata_callback( const char *data )
 
 void uptane_init( void )
 {
-	fprintf(stderr, "libuptane %d.%d.%d - Copyright 2016 (c) Sam Lauzon, University of Michigan", 
+	fprintf(stderr, "libuptane %d.%d.%d\n", 
 			VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);
 
 	web_init(webdata_callback); 
 	web_fetch("https://www.samlauzon.com"); 
 	web_fini(); 
+
+	init_can(); 
 
 }
 
