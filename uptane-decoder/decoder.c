@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	}
 
 	// Debug Print: 
-	// asn_fprint(stderr, &asn_DEF_Metadata, metadata); 
+	//   asn_fprint(stderr, &asn_DEF_Metadata, metadata); 
 
 	Signed_t st = metadata->Signed;
 
@@ -75,7 +75,6 @@ int main(int argc, char **argv)
 
 	SignedBody_t body = st.body;
 
-
 	switch( body.present ) {
 		case SignedBody_PR_timestampMetadata:
 			fprintf(stderr, "Found Timestamp metadata.\n"); 
@@ -94,8 +93,36 @@ int main(int argc, char **argv)
 			break;
 	}
 
+	Signatures_t sigs = metadata->signatures; 
 
+	fprintf(stderr, "Found %d signature(s)\n", sigs.list.count);
 
+	Signature_t *sig; 
+	sig = sigs.list.array[0]; 
 
+	fprintf(stderr, "Key ID: %s \n", (char *)sig->keyid.buf); 
+	int method; 
+	asn_INTEGER2long(&sig->method, &method); 
+	// Does this need a memcpy  or did it not blow out 'sig' ? 
+	fprintf(stderr, "Method: %d\n", method);
+
+	Hash_t hash = sig->hash;
+	int func; 
+	asn_INTEGER2long(&hash.function, &func);
+	fprintf(stderr, "Hash function: %d\n", func); 
+
+	BinaryData_t digest = hash.digest;
+	switch(digest.present) { 
+		case BinaryData_PR_hexString: 
+			fprintf(stderr, "Hex string digest: %s \n", (char *)digest.choice.hexString.buf);
+			break;
+
+		case BinaryData_PR_bitString:
+			fprintf(stderr, "is a bit string \n");
+			break;
+
+		// Default: 
+	}
 }
+
 
