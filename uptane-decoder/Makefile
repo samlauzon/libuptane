@@ -19,7 +19,7 @@ application: $(OBJS)
 	cp $(OUT) ../   
    
 clean:
-	rm $(OUT) $(OBJS) ../$(OUT)
+	-rm -f $(OUT) $(OBJS) ../$(OUT)
 #ifneq (,$(findstring cygwin,$(MAKE_HOST)))   ## Cygwin links .dll & ignores .so
 #	@echo "WARNING: Breaking the rules for a windows clean on $(MAKE_HOST)"
 #	rm ../libuptane.dll
