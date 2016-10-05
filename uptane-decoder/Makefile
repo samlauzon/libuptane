@@ -2,12 +2,13 @@
 # Uptane data decoder
 #
 CC = gcc
-CFLAGS = -Wall -I. -L../
+CFLAGS = -Wall -I. -L../ -I./codec/
 LDFLAGS = 
 LDLIBS = 
 OUT = uptanedecoder
 
 OBJS := $(patsubst %.c,%.o,$(wildcard *.c))
+OBJS += $(patsubst codec/%.c,codec/%.o,$(wildcard codec/*.c))
 
 application: $(OBJS)
 #ifneq (,$(findstring cygwin,$(MAKE_HOST)))   ## Cygwin links .dll & ignores .so
