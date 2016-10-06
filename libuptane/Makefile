@@ -45,13 +45,19 @@ INTERFACE_OBJS += $(patsubst interfaces/can-socketcan/%.c,interfaces/can-socketc
 INTERFACE_CFLAGS += -Iinterfaces/can-socketcan
 INTERFACE_LIBRARIES += 
 
+########################
+# can-socketcan 
+########################
+INTERFACE_OBJS += $(patsubst interfaces/config-file/%.c,interfaces/config-file/%.o,$(wildcard interfaces/config-file/*.c)) 
+INTERFACE_CFLAGS += -Iinterfaces/config-file
+INTERFACE_LIBRARIES += 
 
 ########################
 # Core Build
 ########################
 # Definitions
 CC = gcc
-CFLAGS = -std=c11 -Wall -fpic -I./include -Iinterfaces/include $(INTERFACE_CFLAGS)
+CFLAGS = -std=c11 -Wall -fpic -I./include -Iinterfaces/include $(INTERFACE_CFLAGS) 
 LDFLAGS = -shared 
 OUTPUT = libuptane.so 
 # Core library source + Interfaces

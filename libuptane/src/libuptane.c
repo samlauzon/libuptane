@@ -8,10 +8,12 @@
 #include "interfaces.h"
 
 #include "can.h"
+#include "config.h"
 
 #include "sha256.h" 
 #include "sha512.h"
 
+#include "config-file-wrapper.h" // remove me
 
 char ncsha512[1024] = { 0 }; 
 char ncsha256[1024] = { 0 }; 
@@ -51,9 +53,17 @@ void uptane_init( void )
 	fprintf(stderr, "libuptane %d.%d.%d\n", 
 			VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);
 
-	web_init(webdata_callback); 
-	web_fetch("https://www.samlauzon.com"); 
-	web_fini(); 
+
+	init_config(); 
+
+   fprintf(stderr, "The int is %d\n", get_config_int("value_int")); 
+
+   fprintf(stderr, "The int is %d\n", get_config_int("test")); 
+
+	fprintf(stderr, "The string is %s\n", get_config_string("value_string"));
+//	web_init(webdata_callback); 
+//	web_fetch("https://www.samlauzon.com"); 
+//	web_fini(); 
 
 	init_can(); 
 
