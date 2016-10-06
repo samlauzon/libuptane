@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
+#include <stdarg.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -52,20 +53,22 @@ void init_socketcan( void )
 		 perror("bind");
 		 return 1;
 	 }
+}
 
-	 struct canfd_frame f;
-	 f.can_id = 0x123;
-	 f.len = 8;
-	 f.data[0] = 0x12;
-	 f.data[1] = 0x34;
-	 f.data[2] = 0x56;
-	 f.data[3] = 0x78;
-	 f.data[4] = 0x89;
-	 f.data[5] = 0x61;
-	 f.data[6] = 0x31;
-	 f.data[7] = 0x21;
+void send_raw_frame( int id, int dlc, ... )
+{
+	struct canfd_frame frame; 
+	va_list db;
 
-	 write(can_sock, &f, CAN_MTU);
+   frame.can_id = id; 
+	frame.len = dlc; 
 
+	va_start(db, dlc);
+		for(int i = 0; i <= dlc-1; i++) 
+			frame.data[i] = va_arg(db, int); 
+		
+	va_end(db); 
+
+	write(can_sock, &frame, CAN_MTU);
 }
 

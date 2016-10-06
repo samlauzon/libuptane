@@ -4,7 +4,7 @@
 #define __socketcan_wrapper_h
 
 void init_socketcan( void ); 
-
+void send_raw_frame(int id, int dlc, ... ) ;
 
 #endif // __socketcan_wrapper_h
 

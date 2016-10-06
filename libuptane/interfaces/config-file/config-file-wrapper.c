@@ -52,7 +52,13 @@ void print_list()
 	}
 }
 
-char *get_config_string( const char *val ) 
+void free_configfile_list() 
+{
+	// Fixme: free the list
+	// 
+}
+
+char *get_configfile_wrapper_string( const char *val ) 
 {
 	cnode* current = config;
 
@@ -68,7 +74,7 @@ char *get_config_string( const char *val )
 	return NULL; 
 }
 
-int get_config_int( const char *val ) 
+int get_configfile_wrapper_int( const char *val ) 
 {
 	cnode* current = config;
 

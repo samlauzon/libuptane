@@ -14,6 +14,7 @@
 #include "sha512.h"
 
 #include "config-file-wrapper.h" // remove me
+#include "socketcan-wrapper.h"
 
 char ncsha512[1024] = { 0 }; 
 char ncsha256[1024] = { 0 }; 
@@ -56,16 +57,24 @@ void uptane_init( void )
 
 	init_config(); 
 
-   fprintf(stderr, "The int called \"value_int\" is %d\n", get_config_int("value_int")); 
-
-   fprintf(stderr, "The int called \"test\" is %d\n", get_config_int("test")); 
-
-	fprintf(stderr, "The string called \"value_string\" is %s\n", get_config_string("value_string"));
-//	web_init(webdata_callback); 
+	web_init(webdata_callback); 
 //	web_fetch("https://www.samlauzon.com"); 
-//	web_fini(); 
 
 	init_can(); 
+	send_raw_frame( 1, 1, 0xFF ); 
+	send_raw_frame( 2, 2, 0xFF, 0xFF ); 
+	send_raw_frame( 3, 3, 0xFF, 0xFF, 0xFF ); 
+	send_raw_frame( 4, 4, 0xFF, 0xFF, 0xFF, 0xFF ); 
+	send_raw_frame( 5, 5, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
+	send_raw_frame( 6, 6, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
+	send_raw_frame( 7, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
 
+
+}
+
+
+void uptane_finish( void ) 
+{
+	web_fini(); 
 }
 

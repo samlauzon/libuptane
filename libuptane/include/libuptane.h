@@ -6,6 +6,7 @@
 
 // Expose these things to the application layer
 extern void uptane_init( void );
+extern void uptane_finish( void ); 
 
 // Application layer Callbacks 
 
