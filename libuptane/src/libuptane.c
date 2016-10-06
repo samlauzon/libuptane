@@ -7,14 +7,11 @@
 #include "libuptane.h"
 #include "interfaces.h"
 
-#include "can.h"
-#include "config.h"
-
 #include "sha256.h" 
 #include "sha512.h"
 
-#include "config-file-wrapper.h" // remove me
-#include "socketcan-wrapper.h"
+#include "socketcan-wrapper.h" // remove me
+
 
 char ncsha512[1024] = { 0 }; 
 char ncsha256[1024] = { 0 }; 
@@ -44,9 +41,9 @@ void webdata_callback( const char *data )
 		fprintf(stderr, "%X", 0xFF & ncsha256[i] ); 
 	}
 	fprintf(stderr, "\n\n"); 
-	
 
-	free( (void *) data); // was malloc'd in the wrapper.
+	free( (void *) data); 	// was malloc'd in the wrapper. 
+									//Probably bad. Add cbCleanup? 
 }
 
 void uptane_init( void )
@@ -69,6 +66,7 @@ void uptane_init( void )
 	send_raw_frame( 6, 6, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
 	send_raw_frame( 7, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
 
+	send_raw_isotp(); 
 
 }
 
@@ -76,5 +74,6 @@ void uptane_init( void )
 void uptane_finish( void ) 
 {
 	web_fini(); 
+   fini_config(); 
 }
 
