@@ -56,11 +56,11 @@ void uptane_init( void )
 
 	init_config(); 
 
-   fprintf(stderr, "The int is %d\n", get_config_int("value_int")); 
+   fprintf(stderr, "The int called \"value_int\" is %d\n", get_config_int("value_int")); 
 
-   fprintf(stderr, "The int is %d\n", get_config_int("test")); 
+   fprintf(stderr, "The int called \"test\" is %d\n", get_config_int("test")); 
 
-	fprintf(stderr, "The string is %s\n", get_config_string("value_string"));
+	fprintf(stderr, "The string called \"value_string\" is %s\n", get_config_string("value_string"));
 //	web_init(webdata_callback); 
 //	web_fetch("https://www.samlauzon.com"); 
 //	web_fini(); 
