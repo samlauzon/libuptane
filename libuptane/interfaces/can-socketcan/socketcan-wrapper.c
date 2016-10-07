@@ -76,13 +76,13 @@ void send_raw_frame( int id, int dlc, ... )
 	struct canfd_frame frame; 
 	va_list db;
 
-   frame.can_id = id; 
+	frame.can_id = id; 
 	frame.len = dlc; 
 
 	va_start(db, dlc);
-		for(int i = 0; i <= dlc-1; i++) 
-			frame.data[i] = va_arg(db, int); 
-		
+	for(int i = 0; i <= dlc-1; i++) 
+		frame.data[i] = va_arg(db, int); 
+
 	va_end(db); 
 
 	write(can_sock, &frame, CAN_MTU);
@@ -96,7 +96,7 @@ void send_raw_isotp( )
 	if( f == NULL )
 	{
 		fprintf(stderr, "Cannot open file \"%s\" - Exiting.\n", filename);
-			return; 
+		return; 
 	}
 
 	fseek(f, 0, SEEK_END);

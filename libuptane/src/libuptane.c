@@ -20,16 +20,16 @@ void webdata_callback( const char *data )
 {
 	fprintf(stderr, "Received data from the web; \n");
 	fprintf(stderr, data); 
-	
+
 	// Verified against http://hash.online-convert.com/sha512-generator
 	int p = sha512(data, strlen(data), &ncsha512); 
 	fprintf(stderr, "\n The SHA512 is: ", ncsha512);  
 	for(int i = 0; i <= 63; i++) {
-      fprintf(stderr, "%X", 0xFF & ncsha512[i]  ); 
-   } 
+		fprintf(stderr, "%X", 0xFF & ncsha512[i]  ); 
+	} 
 	fprintf(stderr, "\n"); 
 
-	 // Sha 256? 
+	// Sha 256? 
 
 	struct sha256_state md; 
 	sha256_init( &md ); 
@@ -43,7 +43,7 @@ void webdata_callback( const char *data )
 	fprintf(stderr, "\n\n"); 
 
 	free( (void *) data); 	// was malloc'd in the wrapper. 
-									//Probably bad. Add cbCleanup? 
+	//Probably bad. Add cbCleanup? 
 }
 
 void uptane_init( void )
@@ -55,7 +55,7 @@ void uptane_init( void )
 	init_config(); 
 
 	web_init(webdata_callback); 
-//	web_fetch("https://www.samlauzon.com"); 
+	//	web_fetch("https://www.samlauzon.com"); 
 
 	init_can(); 
 	send_raw_frame( 1, 1, 0xFF ); 
@@ -74,6 +74,6 @@ void uptane_init( void )
 void uptane_finish( void ) 
 {
 	web_fini(); 
-   fini_config(); 
+	fini_config(); 
 }
 
