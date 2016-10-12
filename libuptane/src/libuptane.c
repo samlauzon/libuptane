@@ -74,12 +74,15 @@ void uptane_init( void )
 	send_raw_frame( 7, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
 
 	//send_raw_isotp(); 
-   //socketcan_isotp_transmit( 1, NULL, 1 ); 
+   socketcan_isotp_transmit( 1, NULL, 1 ); 
 
 	////////
 	//  Test the ASN.1 Parsing
 	//
 	  test_encodings(); 
+
+	//pthread_t th_tprecv;
+	//pthread_create( &th_tprecv, NULL, socketcan_isotp_receive );
 }
 
 
@@ -140,7 +143,7 @@ void test_encodings()
 	}
 
 	/////////////
-	//
+	// Parse some things 
 	asn_dec_rval_t dv;
 	Metadata_t *metadata; 
 
@@ -150,8 +153,10 @@ void test_encodings()
 		fprintf(stderr, "Decoded %d bytes of BER\n", dv.consumed); 
 	}
 
+	/////
+	// Manual BER parse to find the length of the Signatures section 
 	// THIS IS BAD. Probably; 
-	fprintf(stderr, "%x size bytes\n", *(buf+5)^0x80);
+	//fprintf(stderr, "%x size bytes\n", *(buf+5)^0x80);
 	sec_len = 0; 
 	for(i = 0; i <= ((*(buf+5)^0x80)-1); i++) 
 	{
@@ -159,7 +164,7 @@ void test_encodings()
 		sec_len |= (*(buf+6+i))<<( ((*(buf+5)^0x80)-(i+1)) * 8); 
 	}
 	sec_len += 4;
-	fprintf(stderr, "I think the size of signatures is... %d \n", sec_len); 
+	//fprintf(stderr, "I think the size of signatures is... %d \n", sec_len); 
 	
 	// Debug Print: 
 	//   asn_fprint(stderr, &asn_DEF_Metadata, metadata); 
@@ -204,7 +209,7 @@ void test_encodings()
 
 
 	sha256_init( &md ); 
-	sha256_process( &md, buf+0x04, 0x128 ); 
+	sha256_process( &md, buf+0x04, sec_len ); 
 	sha256_done( &md, filehash ); 
 
 	char nv[2]; 

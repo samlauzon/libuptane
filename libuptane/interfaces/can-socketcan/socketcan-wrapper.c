@@ -272,7 +272,6 @@ void socketcan_read( void )
 
 	int nbytes; 
 
-
 	recv_buf = (struct canfd_frame *)malloc(sizeof(struct canfd_frame) * num_targets); 
 	memset(recv_buf, 0, sizeof(struct canfd_frame) * num_targets); 
 
@@ -281,6 +280,8 @@ void socketcan_read( void )
 
 	int flags = fcntl(can_sock, F_GETFL, 0);
 	fcntl(can_sock, F_SETFL, flags | O_NONBLOCK);
+
+
 
 	while(s_read) 
 	{
@@ -305,29 +306,32 @@ void socketcan_read( void )
 		}
 
 		// Parse list of targets 
-	   for(int n = 0; n <= num_targets; n++) 
+		for(int n = 0; n <= num_targets; n++) 
 		{
 			// If we found a matching ID 
 			if( frame.can_id == target_ids[n] ) 
 			{
-				// Is it a new frame, or the same? 
-				if( memcmp( &recv_buf[n], &frame, sizeof( struct can_frame )) ) 
-				{
-					memcpy(recv_buf + sizeof(struct can_frame) * n, &frame, sizeof( struct can_frame));
+				if( recv_buf[n].data[0] != frame.data[0] || recv_buf[n].data[1] != frame.data[1] ||
+						recv_buf[n].data[2] != frame.data[2] || recv_buf[n].data[3] != frame.data[3] )
+				{ 
 					fprintf(stderr, "[can-socketcan|read] target 0x%X has status %d\n", target_ids[n], frame.data[3]); 
+					// wish memcpy worked 
+					recv_buf[n].data[0] = frame.data[0] ;
+					recv_buf[n].data[1] = frame.data[1] ;
+					recv_buf[n].data[2] = frame.data[2] ;
+					recv_buf[n].data[3] = frame.data[3]  ;
 				}
 			}
 		}
-	
+
 
 	}
-
 	////
 	//  These get flagged as a double free at runtime. 
 	//    .. I'll take it's word for it, I guess.
 	//free(target_ids); 
 	//free(cfg_str);
-	
+
 	free(recv_buf);
 
 	pthread_exit(s_read); 
@@ -337,8 +341,8 @@ void socketcan_isotp_transmit( int target, char *data, int size )
 {
 	addr_isotp.can_family = AF_CAN;
 	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
-	addr_isotp.can_addr.tp.tx_id = target_ids[target] + 1;  // One above status
-	addr_isotp.can_addr.tp.rx_id = status_id + 1;  
+	addr_isotp.can_addr.tp.tx_id = status_id +1;  // One above status
+	addr_isotp.can_addr.tp.rx_id = target_ids[target] + 1; 
 
 	//fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
 	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
@@ -346,14 +350,35 @@ void socketcan_isotp_transmit( int target, char *data, int size )
 		perror("bind isotp");
 		return 1; 
 	}
- 
+
 	send_raw_isotp();
 
 }
 
 void socketcan_isotp_receive( void ) 
 {
+   unsigned char msg[5000]; // 4095 max anyway? 
+   int nbytes;
 
+	addr_isotp.can_family = AF_CAN;
+	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
+	addr_isotp.can_addr.tp.tx_id = 0x601;  // One above status
+	addr_isotp.can_addr.tp.rx_id = 0x201;  
+
+	//fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
+	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
+	{ 
+		perror("bind isotp");
+		return 1; 
+	}
+
+	do {
+		nbytes = read(isotp_sock, msg, 5000);
+		if (nbytes > 0 && nbytes < 5000)
+			for (int i=0; i < nbytes; i++)
+				printf("%02X ", msg[i]);
+		printf("\n");
+	} while (0);
 }
 
 
