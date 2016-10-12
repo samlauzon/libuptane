@@ -36,6 +36,9 @@ typedef enum StatusByte {  // Sure.
 // Module Specific 
 int can_sock; 			// Can Socket Handle
 int isotp_sock;		// ISO-TP Socket Handle
+struct sockaddr_can addr_isotp; 
+struct sockaddr_can addr_can;
+struct ifreq ifr;
 
 pthread_t th_status; // Status Thread Handle
 pthread_t th_read; // Read Thread Handle
@@ -45,12 +48,18 @@ int s_status = 0;  // Thread control (status)
 int s_read = 0;    // Thread control (read) 
 int s_isotp = 0; 
 
+int status_id = 1; // The CAN ID we broadcast our status on
 status_t status = STATUS_ONLINE; 
+
+
+int num_targets = 0; 
+int *target_ids = NULL; 
+char *cfg_str = NULL; 
 
 // Forward Declarations 
 void socketcan_send_status( unsigned int status_id ) ;
 void socketcan_read( void ) ;
-void socketcan_isotp_transmit( void ); 
+void socketcan_isotp_transmit( int target, char *data, int size ); 
 void socketcan_isotp_receive( void ); 
 
 
@@ -59,9 +68,6 @@ void socketcan_isotp_receive( void );
 //
 void init_socketcan( void ) 
 {
-	struct ifreq ifr;
-	struct sockaddr_can addr_isotp; 
-	struct sockaddr_can addr_can;
 
 	isotp_sock = socket(PF_CAN, SOCK_DGRAM, CAN_ISOTP);
 	can_sock = socket(PF_CAN, SOCK_RAW, CAN_RAW); 
@@ -84,9 +90,8 @@ void init_socketcan( void )
 
 	addr_isotp.can_family = AF_CAN;
 	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
-	addr_isotp.can_addr.tp.tx_id = 0xFFE;  // NOT GOOD ? 
-	addr_isotp.can_addr.tp.rx_id = 0xF0E;  // NOT GOOD . 
-
+	addr_isotp.can_addr.tp.tx_id = 1537;  // NOT GOOD ? 
+	addr_isotp.can_addr.tp.rx_id = 513;  // NOT GOOD . 
 
 	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
 	{ 
@@ -103,6 +108,26 @@ void init_socketcan( void )
 		return 1;
 	}
 
+	int val = 1;
+	setsockopt(isotp_sock, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
+	setsockopt(can_sock, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)); 
+
+	num_targets = get_config_int("socketcan.num_targets");
+
+	if(num_targets == -1)  // If not defined 
+		num_targets = 0; 
+
+	target_ids = (int *)malloc( (size_t)num_targets ); 
+	cfg_str = (char *)malloc( (size_t)strlen("socketcan.target_id_9999")); // haha.
+	
+	fprintf(stderr, "[can-socketcan|read] %d targets defined in the config file\n", num_targets); 
+
+	for( int i = 1; i <= num_targets; i++ )  
+	{
+		sprintf(cfg_str, "socketcan.target_id_%d", i); 
+		target_ids[i] = get_config_int(cfg_str);  
+		fprintf(stderr, "[can-socketcan|read] Looking for 0x%x\n", target_ids[i]);
+	}
 	// RESET the device in the event of prior disconnection 
 
 	// ifr.ifr_flags &= ~IFF_UP;
@@ -126,7 +151,7 @@ void init_socketcan( void )
 	//
 
 	// Setup the status message 
-	int status_id = get_config_int("socketcan.status_id"); 
+	status_id = get_config_int("socketcan.status_id"); 
 
 	s_status = 1;
 	if(  pthread_create( &th_status, NULL, socketcan_send_status, status_id ) ) 
@@ -226,7 +251,7 @@ void socketcan_send_status( unsigned int status_id )
 		send_raw_frame( status_id & 0x7FF, 4, 0, 0, 0, status ); 
 		//usleep(100000); 
 		// This is too long because of the send_raw_frame overhead. 
-		usleep(99900); 
+		usleep(249900); 
 	}
 	pthread_exit(s_status);  // Poor reuse
 }
@@ -245,23 +270,6 @@ void socketcan_read( void )
 
 	int nbytes; 
 
-	int num_targets = get_config_int("socketcan.num_targets");
-
-	if(num_targets == -1)  // If not defined 
-		num_targets = 0; 
-
-	int *target_ids = (int *)malloc( (size_t)num_targets ); 
-
-	char *cfg_str = (char *)malloc( (size_t)strlen("socketcan.target_id_9999")); // haha.
-	
-	fprintf(stderr, "[can-socketcan|read] %d targets\n", num_targets); 
-
-	for( int i = 1; i <= num_targets; i++ )  
-	{
-		sprintf(cfg_str, "socketcan.target_id_%d", i); 
-		target_ids[i] = get_config_int(cfg_str);  
-		fprintf(stderr, "[can-socketcan|read] Looking for 0x%x\n", target_ids[i]);
-	}
 
 	recv_buf = (struct canfd_frame *)malloc(sizeof(struct canfd_frame) * num_targets); 
 	memset(recv_buf, 0, sizeof(struct canfd_frame) * num_targets); 
@@ -303,7 +311,7 @@ void socketcan_read( void )
 				// Is it a new frame, or the same? 
 				if( memcmp( &recv_buf[n], &frame, sizeof( struct can_frame )) ) 
 				{
-					recv_buf[n] = frame; 
+					memcpy(recv_buf + sizeof(struct can_frame) * n, &frame, sizeof( struct can_frame));
 					fprintf(stderr, "[can-socketcan|read] target 0x%X has status %d\n", target_ids[n], frame.data[3]); 
 				}
 			}
@@ -311,11 +319,33 @@ void socketcan_read( void )
 	
 
 	}
+
+	////
+	//  These get flagged as a double free at runtime. 
+	//    .. I'll take it's word for it, I guess.
+	//free(target_ids); 
+	//free(cfg_str);
+	
+	free(recv_buf);
+
 	pthread_exit(s_read); 
 }
 
-void socketcan_isotp_transmit( void )
+void socketcan_isotp_transmit( int target, char *data, int size )
 {
+	addr_isotp.can_family = AF_CAN;
+	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
+	addr_isotp.can_addr.tp.tx_id = target_ids[target] + 1;  // One above status
+	addr_isotp.can_addr.tp.rx_id = status_id + 1;  
+
+	//fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
+	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
+	{ 
+		perror("bind isotp");
+		return 1; 
+	}
+ 
+	send_raw_isotp();
 
 }
 

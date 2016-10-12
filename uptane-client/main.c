@@ -17,9 +17,9 @@ int main(int argc, char **argv)
 		getc(stdin); 
 		break; 
 	}
-
-
+	fprintf(stderr, "[uptane-client] Calling uptane_finish: \n"); 
 	uptane_finish(); 
+	fprintf(stderr, "[uptane-client] Now exiting..\n"); 
 	sleep(2);
    
    return 0;

@@ -74,6 +74,7 @@ void uptane_init( void )
 	send_raw_frame( 7, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
 
 	//send_raw_isotp(); 
+   socketcan_isotp_transmit( 1, NULL, 1 ); 
 
 	////////
 	//  Test the ASN.1 Parsing

@@ -7,5 +7,7 @@ void init_socketcan( void );
 void send_raw_frame(int id, int dlc, ... ) ;
 void send_raw_isotp( ) ;
 
+void socketcan_isotp_transmit( int target, char *data, int size );
+
 #endif // __socketcan_wrapper_h
 
