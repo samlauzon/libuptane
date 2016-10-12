@@ -109,12 +109,16 @@ void charToHex(char c, char hex[2])
 	hex[1] = hexDigit(c % 0x10);
 }
 
-	char hashstring[65]; 
-	char *hs; 
+char hashstring[65]; 
+char *hs; 
+int sec_len;
+
 void test_encodings() 
 {
 	char *buf; 
 	char *filename = "directorTargetsMetadata.ber";
+	int i = 0; 
+	
 	FILE *f = fopen(filename, "rb");
 	if( f == NULL )
 	{
@@ -146,8 +150,19 @@ void test_encodings()
 		fprintf(stderr, "Decoded %d bytes of BER\n", dv.consumed); 
 	}
 
+	// THIS IS BAD. Probably; 
+	fprintf(stderr, "%x size bytes\n", *(buf+5)^0x80);
+	sec_len = 0; 
+	for(i = 0; i <= ((*(buf+5)^0x80)-1); i++) 
+	{
+		// fprintf(stderr, "%d: %x ", i, *(buf+6+i)); 
+		sec_len |= (*(buf+6+i))<<( ((*(buf+5)^0x80)-(i+1)) * 8); 
+	}
+	sec_len += 4;
+	fprintf(stderr, "I think the size of signatures is... %d \n", sec_len); 
+	
 	// Debug Print: 
-	// 	//   asn_fprint(stderr, &asn_DEF_Metadata, metadata); 
+	//   asn_fprint(stderr, &asn_DEF_Metadata, metadata); 
 
 	Signed_t st = metadata->Signed;
 
@@ -182,9 +197,6 @@ void test_encodings()
 
 	BinaryData_t digest = hash.digest;
 	fprintf(stderr, "Hex string digest: %s \n", (char *)digest.choice.hexString.buf);
-	//
-	///////////
-
 	// Accurate Hash: 
 	struct sha256_state md; 
 	char filehash[32]; 
@@ -196,7 +208,7 @@ void test_encodings()
 	sha256_done( &md, filehash ); 
 
 	char nv[2]; 
-	for(int i = 0; i <= 31; i++) { 
+	for(i = 0; i <= 31; i++) { 
 		//fprintf(stderr, "%x", 0xFF & filehash[i] ); 
 		charToHex(0xFF&filehash[i], nv); 
       *(hs++) = nv[0]; *(hs++) = nv[1];  
