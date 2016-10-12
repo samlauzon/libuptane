@@ -11,22 +11,19 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
-#include "RoleName.h"
-#include "StrictFilename.h"
-#include "Keyids.h"
-#include "Threshold.h"
-#include <constr_SEQUENCE.h>
+#include <asn_SEQUENCE_OF.h>
+#include <constr_SEQUENCE_OF.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/* Forward declarations */
+struct DelegatedTargetsRole;
+
 /* DelegatedTargetsRoles */
 typedef struct DelegatedTargetsRoles {
-	RoleName_t	 rolename;
-	StrictFilename_t	*filename	/* OPTIONAL */;
-	Keyids_t	 keyids;
-	Threshold_t	 threshold;
+	A_SEQUENCE_OF(struct DelegatedTargetsRole) list;
 	
 	/* Context for parsing across buffer boundaries */
 	asn_struct_ctx_t _asn_ctx;
@@ -38,6 +35,9 @@ extern asn_TYPE_descriptor_t asn_DEF_DelegatedTargetsRoles;
 #ifdef __cplusplus
 }
 #endif
+
+/* Referred external types */
+#include "DelegatedTargetsRole.h"
 
 #endif	/* _DelegatedTargetsRoles_H_ */
 #include <asn_internal.h>

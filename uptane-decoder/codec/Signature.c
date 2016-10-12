@@ -34,20 +34,30 @@ static asn_TYPE_member_t asn_MBR_Signature_1[] = {
 		0,
 		"hash"
 		},
+	{ ATF_NOFLAGS, 0, offsetof(struct Signature, value),
+		(ASN_TAG_CLASS_CONTEXT | (3 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_HexString,
+		0,	/* Defer constraints checking to the member type */
+		0,	/* PER is not compiled, use -gen-PER */
+		0,
+		"value"
+		},
 };
 static ber_tlv_tag_t asn_DEF_Signature_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static asn_TYPE_tag2member_t asn_MAP_Signature_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* keyid at 47 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* method at 48 */
-    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 } /* hash at 51 */
+    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* keyid at 61 */
+    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* method at 62 */
+    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* hash at 65 */
+    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 } /* value at 68 */
 };
 static asn_SEQUENCE_specifics_t asn_SPC_Signature_specs_1 = {
 	sizeof(struct Signature),
 	offsetof(struct Signature, _asn_ctx),
 	asn_MAP_Signature_tag2el_1,
-	3,	/* Count of tags in the map */
+	4,	/* Count of tags in the map */
 	0, 0, 0,	/* Optional elements (not needed) */
 	-1,	/* Start extensions */
 	-1	/* Stop extensions */
@@ -72,7 +82,7 @@ asn_TYPE_descriptor_t asn_DEF_Signature = {
 		/sizeof(asn_DEF_Signature_tags_1[0]), /* 1 */
 	0,	/* No PER visible constraints */
 	asn_MBR_Signature_1,
-	3,	/* Elements count */
+	4,	/* Elements count */
 	&asn_SPC_Signature_specs_1	/* Additional specs */
 };
 

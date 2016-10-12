@@ -90,14 +90,16 @@ void init_socketcan( void )
 
 	addr_isotp.can_family = AF_CAN;
 	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
-	addr_isotp.can_addr.tp.tx_id = 1537;  // NOT GOOD ? 
-	addr_isotp.can_addr.tp.rx_id = 513;  // NOT GOOD . 
 
-	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
-	{ 
-		perror("bind isotp");
-		return 1; 
-	}
+	 // This is what it's relying on now 
+	//addr_isotp.can_addr.tp.tx_id = 1537;  // NOT GOOD ? 
+	//addr_isotp.can_addr.tp.rx_id = 513;  // NOT GOOD . 
+
+	//if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
+	//{ 
+	//	perror("bind isotp");
+	//	return 1; 
+	//}
 
 	addr_can.can_family = AF_CAN;
 	addr_can.can_ifindex = ifr.ifr_ifindex;

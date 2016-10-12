@@ -45,10 +45,10 @@ static asn_TYPE_member_t asn_MBR_SignedBody_1[] = {
 		},
 };
 static asn_TYPE_tag2member_t asn_MAP_SignedBody_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* rootMetadata at 26 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* targetsMetadata at 27 */
-    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* snapshotMetadata at 28 */
-    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 } /* timestampMetadata at 30 */
+    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* rootMetadata at 28 */
+    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* targetsMetadata at 29 */
+    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* snapshotMetadata at 30 */
+    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 } /* timestampMetadata at 32 */
 };
 static asn_CHOICE_specifics_t asn_SPC_SignedBody_specs_1 = {
 	sizeof(struct SignedBody),

@@ -23,6 +23,7 @@ int
 RoleName_constraint(asn_TYPE_descriptor_t *td, const void *sptr,
 			asn_app_constraint_failed_f *ctfailcb, void *app_key) {
 	const StrictFilename_t *st = (const StrictFilename_t *)sptr;
+	size_t size;
 	
 	if(!sptr) {
 		_ASN_CTFAIL(app_key, td, sptr,
@@ -31,8 +32,10 @@ RoleName_constraint(asn_TYPE_descriptor_t *td, const void *sptr,
 		return -1;
 	}
 	
+	size = st->size;
 	
-	if(!check_permitted_alphabet_1(st)) {
+	if((size >= 1 && size <= 32)
+		 && !check_permitted_alphabet_1(st)) {
 		/* Constraint check succeeded */
 		return 0;
 	} else {

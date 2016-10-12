@@ -11,7 +11,7 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
-#include <VisibleString.h>
+#include "Identifier.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
@@ -24,7 +24,7 @@ struct EncryptedSymmetricKey;
 
 /* Custom */
 typedef struct Custom {
-	VisibleString_t	 ecuIdentifier;
+	Identifier_t	 ecuIdentifier;
 	struct Target	*encryptedTarget	/* OPTIONAL */;
 	struct EncryptedSymmetricKey	*encryptedSymmetricKey	/* OPTIONAL */;
 	/*

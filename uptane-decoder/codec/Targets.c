@@ -7,51 +7,34 @@
 #include "Targets.h"
 
 static asn_TYPE_member_t asn_MBR_Targets_1[] = {
-	{ ATF_NOFLAGS, 0, offsetof(struct Targets, target),
-		(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
-		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_Target,
+	{ ATF_POINTER, 0, 0,
+		(ASN_TAG_CLASS_UNIVERSAL | (16 << 2)),
+		0,
+		&asn_DEF_TargetAndCustom,
 		0,	/* Defer constraints checking to the member type */
 		0,	/* PER is not compiled, use -gen-PER */
 		0,
-		"target"
-		},
-	{ ATF_POINTER, 1, offsetof(struct Targets, custom),
-		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
-		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_Custom,
-		0,	/* Defer constraints checking to the member type */
-		0,	/* PER is not compiled, use -gen-PER */
-		0,
-		"custom"
+		""
 		},
 };
 static ber_tlv_tag_t asn_DEF_Targets_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
-static asn_TYPE_tag2member_t asn_MAP_Targets_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* target at 19 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 } /* custom at 23 */
-};
-static asn_SEQUENCE_specifics_t asn_SPC_Targets_specs_1 = {
+static asn_SET_OF_specifics_t asn_SPC_Targets_specs_1 = {
 	sizeof(struct Targets),
 	offsetof(struct Targets, _asn_ctx),
-	asn_MAP_Targets_tag2el_1,
-	2,	/* Count of tags in the map */
-	0, 0, 0,	/* Optional elements (not needed) */
-	-1,	/* Start extensions */
-	-1	/* Stop extensions */
+	0,	/* XER encoding is XMLDelimitedItemList */
 };
 asn_TYPE_descriptor_t asn_DEF_Targets = {
 	"Targets",
 	"Targets",
-	SEQUENCE_free,
-	SEQUENCE_print,
-	SEQUENCE_constraint,
-	SEQUENCE_decode_ber,
-	SEQUENCE_encode_der,
-	SEQUENCE_decode_xer,
-	SEQUENCE_encode_xer,
+	SEQUENCE_OF_free,
+	SEQUENCE_OF_print,
+	SEQUENCE_OF_constraint,
+	SEQUENCE_OF_decode_ber,
+	SEQUENCE_OF_encode_der,
+	SEQUENCE_OF_decode_xer,
+	SEQUENCE_OF_encode_xer,
 	0, 0,	/* No PER support, use "-gen-PER" to enable */
 	0,	/* Use generic outmost tag fetcher */
 	asn_DEF_Targets_tags_1,
@@ -62,7 +45,7 @@ asn_TYPE_descriptor_t asn_DEF_Targets = {
 		/sizeof(asn_DEF_Targets_tags_1[0]), /* 1 */
 	0,	/* No PER visible constraints */
 	asn_MBR_Targets_1,
-	2,	/* Elements count */
+	1,	/* Single element */
 	&asn_SPC_Targets_specs_1	/* Additional specs */
 };
 

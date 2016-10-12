@@ -74,12 +74,12 @@ void uptane_init( void )
 	send_raw_frame( 7, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
 
 	//send_raw_isotp(); 
-   socketcan_isotp_transmit( 1, NULL, 1 ); 
+   //socketcan_isotp_transmit( 1, NULL, 1 ); 
 
 	////////
 	//  Test the ASN.1 Parsing
 	//
-	//  test_encodings(); 
+	  test_encodings(); 
 }
 
 
@@ -94,7 +94,23 @@ void uptane_init( void )
 
 #include "ber_decoder.h"
 
+char hexDigit(unsigned n)
+{
+	if (n < 10) {
+		return n + '0';
+	} else {
+		return (n - 10) + 'a';
+	}
+}
 
+void charToHex(char c, char hex[2])
+{
+	hex[0] = hexDigit(c / 0x10);
+	hex[1] = hexDigit(c % 0x10);
+}
+
+	char hashstring[65]; 
+	char *hs; 
 void test_encodings() 
 {
 	char *buf; 
@@ -118,45 +134,80 @@ void test_encodings()
 		fprintf(stderr, "%s: Too large input\n", filename);
 		return;
 	}
-	// Lets get ugly and parse BER 
-   // ASSUME metadata from the git-go.
-		// That's signed, # sigs, signatures 
-   // signed = roletype, timestamp, version, signedbody
-		// signedbody = rootmetadata, targets, snapshot and timestamp 
-	// .. ok. go.
-	
-	char *start = buf; 
-	char *end = buf + size; 
 
-	int slbc = 0;   // size byte length count 
-	int sec_len = 0; 
+	/////////////
+	//
+	asn_dec_rval_t dv;
+	Metadata_t *metadata; 
 
-	fprintf(stderr, "Starting:\n"); 	// VIM: BRACE MOVE PARSER
-   while(0) { //buf != end) {
-		if( *buf == 0x30 ) { buf++; 
-			if( *buf & 0x80 ) { 
-				slbc = *buf & 0x7F; sec_len = 0; 
-				while(slbc--)  
-					sec_len |= (*(++buf))<<( (slbc) * 8); 
+	dv = ber_decode(0, &asn_DEF_Metadata, (void **)&metadata, buf, size); 
 
-			}
-		}
+	if(dv.code == RC_OK) {
+		fprintf(stderr, "Decoded %d bytes of BER\n", dv.consumed); 
 	}
-	fprintf(stderr, "Done.\n"); 
 
-	
+	// Debug Print: 
+	// 	//   asn_fprint(stderr, &asn_DEF_Metadata, metadata); 
+
+	Signed_t st = metadata->Signed;
+
+	RoleType_t roletype; 
+	memcpy( &roletype, &st.type, sizeof( RoleType_t )); 
+	int role;
+	asn_INTEGER2long(&roletype, &role);  // 0 root | 1 targets | 2 snapshot | 3 timestamp
+
+	switch(role) { 
+		case 0: fprintf(stderr, "root"); break;
+		case 1: fprintf(stderr, "targets"); break;
+		case 2: fprintf(stderr, "snapshots"); break;
+		case 3: fprintf(stderr, "timestamp"); break; 
+		default: fprintf(stderr, "broken"); break; 
+
+	}
+	fprintf(stderr, " Role detected\n");
+
+	UTCDateTime_t expires; 
+	memcpy( &expires, &st.expires, sizeof( UTCDateTime_t )); 
+	long expiry;
+	asn_INTEGER2long(&expires, &expiry); 
+	fprintf(stderr, "Expires %d\n", expiry);
+
+	Signatures_t sigs = metadata->signatures; 
+	fprintf(stderr, "Found %d signature(s)\n", sigs.list.count);
+
+	Hash_t hash = sigs.list.array[0]->hash;	
+	int func; 
+	asn_INTEGER2long(&hash.function, &func);
+	fprintf(stderr, "Hash function: %d\n", func); 
+
+	BinaryData_t digest = hash.digest;
+	fprintf(stderr, "Hex string digest: %s \n", (char *)digest.choice.hexString.buf);
+	//
+	///////////
+
+	// Accurate Hash: 
 	struct sha256_state md; 
+	char filehash[32]; 
+	hs = hashstring; 
+
+
 	sha256_init( &md ); 
-	sha256_process( &md, start+5, 0x127 ); 
-	sha256_done( &md, ncsha256 ); 
+	sha256_process( &md, buf+0x04, 0x128 ); 
+	sha256_done( &md, filehash ); 
 
-	fprintf( stderr, " The SHA256 is: "); 
+	char nv[2]; 
 	for(int i = 0; i <= 31; i++) { 
-		fprintf(stderr, "%X", 0xFF & ncsha256[i] ); 
+		//fprintf(stderr, "%x", 0xFF & filehash[i] ); 
+		charToHex(0xFF&filehash[i], nv); 
+      *(hs++) = nv[0]; *(hs++) = nv[1];  
 	}
-	fprintf(stderr, "\n\n"); 
+	*hs='\0'; // Not really required due to strncmp  
 
-
+	// Compare 
+	if(strncmp (hashstring, digest.choice.hexString.buf, 64) == 0 ) 
+		fprintf(stderr, "WE HAVE A WINNER!!!!\n"); 
+	else
+		fprintf(stderr, "Whatchu talkin 'bout, Willis?\n"); 
 }
 
 

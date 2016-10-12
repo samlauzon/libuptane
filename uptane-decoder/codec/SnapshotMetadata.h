@@ -11,8 +11,8 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
-#include "StrictFilename.h"
-#include "Version.h"
+#include "Length.h"
+#include "SnapshotMetadataFiles.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
@@ -21,12 +21,8 @@ extern "C" {
 
 /* SnapshotMetadata */
 typedef struct SnapshotMetadata {
-	StrictFilename_t	 filename;
-	Version_t	 version;
-	/*
-	 * This type is extensible,
-	 * possible extensions are below.
-	 */
+	Length_t	 numberOfSnapshotMetadataFiles;
+	SnapshotMetadataFiles_t	 snapshotMetadataFiles;
 	
 	/* Context for parsing across buffer boundaries */
 	asn_struct_ctx_t _asn_ctx;

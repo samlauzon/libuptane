@@ -11,8 +11,8 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
-#include <BIT_STRING.h>
-#include <OCTET_STRING.h>
+#include "BitString.h"
+#include "OctetString.h"
 #include "HexString.h"
 #include "Base64String.h"
 #include <constr_CHOICE.h>
@@ -34,8 +34,8 @@ typedef enum BinaryData_PR {
 typedef struct BinaryData {
 	BinaryData_PR present;
 	union BinaryData_u {
-		BIT_STRING_t	 bitString;
-		OCTET_STRING_t	 octetString;
+		BitString_t	 bitString;
+		OctetString_t	 octetString;
 		HexString_t	 hexString;
 		Base64String_t	 base64String;
 	} choice;

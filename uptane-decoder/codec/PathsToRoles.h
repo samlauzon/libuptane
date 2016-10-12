@@ -11,6 +11,7 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
+#include "Length.h"
 #include "Paths.h"
 #include "RoleNames.h"
 #include <BOOLEAN.h>
@@ -22,7 +23,9 @@ extern "C" {
 
 /* PathsToRoles */
 typedef struct PathsToRoles {
+	Length_t	 numberOfPaths;
 	Paths_t	 paths;
+	Length_t	 numberOfRoles;
 	RoleNames_t	 roles;
 	BOOLEAN_t	*terminating	/* DEFAULT FALSE */;
 	

@@ -12,6 +12,7 @@
 
 /* Including external dependencies */
 #include "Signed.h"
+#include "Length.h"
 #include "Signatures.h"
 #include <constr_SEQUENCE.h>
 
@@ -22,6 +23,7 @@ extern "C" {
 /* Metadata */
 typedef struct Metadata {
 	Signed_t	 Signed;
+	Length_t	 numberOfSignatures;
 	Signatures_t	 signatures;
 	
 	/* Context for parsing across buffer boundaries */

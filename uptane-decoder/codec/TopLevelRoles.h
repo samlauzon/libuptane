@@ -11,26 +11,19 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
-#include "RoleType.h"
-#include <VisibleString.h>
-#include "Keyids.h"
-#include "Threshold.h"
-#include <constr_SEQUENCE.h>
+#include <asn_SEQUENCE_OF.h>
+#include <constr_SEQUENCE_OF.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/* Forward declarations */
+struct TopLevelRole;
+
 /* TopLevelRoles */
 typedef struct TopLevelRoles {
-	RoleType_t	 role;
-	VisibleString_t	 url;
-	Keyids_t	 keyids;
-	Threshold_t	 threshold;
-	/*
-	 * This type is extensible,
-	 * possible extensions are below.
-	 */
+	A_SEQUENCE_OF(struct TopLevelRole) list;
 	
 	/* Context for parsing across buffer boundaries */
 	asn_struct_ctx_t _asn_ctx;
@@ -42,6 +35,9 @@ extern asn_TYPE_descriptor_t asn_DEF_TopLevelRoles;
 #ifdef __cplusplus
 }
 #endif
+
+/* Referred external types */
+#include "TopLevelRole.h"
 
 #endif	/* _TopLevelRoles_H_ */
 #include <asn_internal.h>

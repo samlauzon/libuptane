@@ -10,7 +10,7 @@ static asn_TYPE_member_t asn_MBR_BinaryData_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct BinaryData, choice.bitString),
 		(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_BIT_STRING,
+		&asn_DEF_BitString,
 		0,	/* Defer constraints checking to the member type */
 		0,	/* PER is not compiled, use -gen-PER */
 		0,
@@ -19,7 +19,7 @@ static asn_TYPE_member_t asn_MBR_BinaryData_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct BinaryData, choice.octetString),
 		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_OCTET_STRING,
+		&asn_DEF_OctetString,
 		0,	/* Defer constraints checking to the member type */
 		0,	/* PER is not compiled, use -gen-PER */
 		0,
@@ -45,10 +45,10 @@ static asn_TYPE_member_t asn_MBR_BinaryData_1[] = {
 		},
 };
 static asn_TYPE_tag2member_t asn_MAP_BinaryData_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* bitString at 27 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* octetString at 28 */
-    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* hexString at 29 */
-    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 } /* base64String at 31 */
+    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* bitString at 38 */
+    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* octetString at 39 */
+    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* hexString at 40 */
+    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 } /* base64String at 42 */
 };
 static asn_CHOICE_specifics_t asn_SPC_BinaryData_specs_1 = {
 	sizeof(struct BinaryData),

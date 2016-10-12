@@ -24,6 +24,7 @@ extern "C" {
 typedef struct Target {
 	Filename_t	 filename;
 	Length_t	 length;
+	Length_t	 numberOfHashes;
 	Hashes_t	 hashes;
 	
 	/* Context for parsing across buffer boundaries */

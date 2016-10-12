@@ -11,6 +11,7 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
+#include "Length.h"
 #include "Targets.h"
 #include <constr_SEQUENCE.h>
 
@@ -23,6 +24,7 @@ struct TargetsDelegations;
 
 /* TargetsMetadata */
 typedef struct TargetsMetadata {
+	Length_t	 numberOfTargets;
 	Targets_t	 targets;
 	struct TargetsDelegations	*delegations	/* OPTIONAL */;
 	/*

@@ -6,23 +6,11 @@
 
 #include "UTCDateTime.h"
 
-static int check_permitted_alphabet_1(const void *sptr) {
-	/* The underlying type is VisibleString */
-	const VisibleString_t *st = (const VisibleString_t *)sptr;
-	const uint8_t *ch = st->buf;
-	const uint8_t *end = ch + st->size;
-	
-	for(; ch < end; ch++) {
-		uint8_t cv = *ch;
-		if(!(cv >= 32 && cv <= 126)) return -1;
-	}
-	return 0;
-}
-
 int
 UTCDateTime_constraint(asn_TYPE_descriptor_t *td, const void *sptr,
 			asn_app_constraint_failed_f *ctfailcb, void *app_key) {
-	const VisibleString_t *st = (const VisibleString_t *)sptr;
+	const Positive_t *st = (const Positive_t *)sptr;
+	long value;
 	
 	if(!sptr) {
 		_ASN_CTFAIL(app_key, td, sptr,
@@ -31,8 +19,14 @@ UTCDateTime_constraint(asn_TYPE_descriptor_t *td, const void *sptr,
 		return -1;
 	}
 	
+	if(asn_INTEGER2long(st, &value)) {
+		_ASN_CTFAIL(app_key, td, sptr,
+			"%s: value too large (%s:%d)",
+			td->name, __FILE__, __LINE__);
+		return -1;
+	}
 	
-	if(!check_permitted_alphabet_1(st)) {
+	if((value >= 1)) {
 		/* Constraint check succeeded */
 		return 0;
 	} else {
@@ -44,24 +38,24 @@ UTCDateTime_constraint(asn_TYPE_descriptor_t *td, const void *sptr,
 }
 
 /*
- * This type is implemented using VisibleString,
+ * This type is implemented using Positive,
  * so here we adjust the DEF accordingly.
  */
 static void
 UTCDateTime_1_inherit_TYPE_descriptor(asn_TYPE_descriptor_t *td) {
-	td->free_struct    = asn_DEF_VisibleString.free_struct;
-	td->print_struct   = asn_DEF_VisibleString.print_struct;
-	td->ber_decoder    = asn_DEF_VisibleString.ber_decoder;
-	td->der_encoder    = asn_DEF_VisibleString.der_encoder;
-	td->xer_decoder    = asn_DEF_VisibleString.xer_decoder;
-	td->xer_encoder    = asn_DEF_VisibleString.xer_encoder;
-	td->uper_decoder   = asn_DEF_VisibleString.uper_decoder;
-	td->uper_encoder   = asn_DEF_VisibleString.uper_encoder;
+	td->free_struct    = asn_DEF_Positive.free_struct;
+	td->print_struct   = asn_DEF_Positive.print_struct;
+	td->ber_decoder    = asn_DEF_Positive.ber_decoder;
+	td->der_encoder    = asn_DEF_Positive.der_encoder;
+	td->xer_decoder    = asn_DEF_Positive.xer_decoder;
+	td->xer_encoder    = asn_DEF_Positive.xer_encoder;
+	td->uper_decoder   = asn_DEF_Positive.uper_decoder;
+	td->uper_encoder   = asn_DEF_Positive.uper_encoder;
 	if(!td->per_constraints)
-		td->per_constraints = asn_DEF_VisibleString.per_constraints;
-	td->elements       = asn_DEF_VisibleString.elements;
-	td->elements_count = asn_DEF_VisibleString.elements_count;
-	td->specifics      = asn_DEF_VisibleString.specifics;
+		td->per_constraints = asn_DEF_Positive.per_constraints;
+	td->elements       = asn_DEF_Positive.elements;
+	td->elements_count = asn_DEF_Positive.elements_count;
+	td->specifics      = asn_DEF_Positive.specifics;
 }
 
 void
@@ -109,7 +103,7 @@ UTCDateTime_encode_xer(asn_TYPE_descriptor_t *td, void *structure,
 }
 
 static ber_tlv_tag_t asn_DEF_UTCDateTime_tags_1[] = {
-	(ASN_TAG_CLASS_UNIVERSAL | (26 << 2))
+	(ASN_TAG_CLASS_UNIVERSAL | (2 << 2))
 };
 asn_TYPE_descriptor_t asn_DEF_UTCDateTime = {
 	"UTCDateTime",

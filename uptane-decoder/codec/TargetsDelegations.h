@@ -11,9 +11,10 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
+#include "Length.h"
 #include "PublicKeys.h"
 #include "DelegatedTargetsRoles.h"
-#include "PathsToRoles.h"
+#include "PrioritizedPathsToRoles.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
@@ -22,9 +23,12 @@ extern "C" {
 
 /* TargetsDelegations */
 typedef struct TargetsDelegations {
+	Length_t	 numberOfKeys;
 	PublicKeys_t	 keys;
+	Length_t	 numberOfRoles;
 	DelegatedTargetsRoles_t	 roles;
-	PathsToRoles_t	 pathsToRoles;
+	Length_t	 numberOfPrioritizedPathsToRoles;
+	PrioritizedPathsToRoles_t	 prioritizedPathsToRoles;
 	
 	/* Context for parsing across buffer boundaries */
 	asn_struct_ctx_t _asn_ctx;

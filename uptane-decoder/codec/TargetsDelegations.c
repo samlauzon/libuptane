@@ -7,8 +7,17 @@
 #include "TargetsDelegations.h"
 
 static asn_TYPE_member_t asn_MBR_TargetsDelegations_1[] = {
-	{ ATF_NOFLAGS, 0, offsetof(struct TargetsDelegations, keys),
+	{ ATF_NOFLAGS, 0, offsetof(struct TargetsDelegations, numberOfKeys),
 		(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_Length,
+		0,	/* Defer constraints checking to the member type */
+		0,	/* PER is not compiled, use -gen-PER */
+		0,
+		"numberOfKeys"
+		},
+	{ ATF_NOFLAGS, 0, offsetof(struct TargetsDelegations, keys),
+		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_PublicKeys,
 		0,	/* Defer constraints checking to the member type */
@@ -16,8 +25,17 @@ static asn_TYPE_member_t asn_MBR_TargetsDelegations_1[] = {
 		0,
 		"keys"
 		},
+	{ ATF_NOFLAGS, 0, offsetof(struct TargetsDelegations, numberOfRoles),
+		(ASN_TAG_CLASS_CONTEXT | (2 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_Length,
+		0,	/* Defer constraints checking to the member type */
+		0,	/* PER is not compiled, use -gen-PER */
+		0,
+		"numberOfRoles"
+		},
 	{ ATF_NOFLAGS, 0, offsetof(struct TargetsDelegations, roles),
-		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
+		(ASN_TAG_CLASS_CONTEXT | (3 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_DelegatedTargetsRoles,
 		0,	/* Defer constraints checking to the member type */
@@ -25,29 +43,41 @@ static asn_TYPE_member_t asn_MBR_TargetsDelegations_1[] = {
 		0,
 		"roles"
 		},
-	{ ATF_NOFLAGS, 0, offsetof(struct TargetsDelegations, pathsToRoles),
-		(ASN_TAG_CLASS_CONTEXT | (2 << 2)),
+	{ ATF_NOFLAGS, 0, offsetof(struct TargetsDelegations, numberOfPrioritizedPathsToRoles),
+		(ASN_TAG_CLASS_CONTEXT | (4 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_PathsToRoles,
+		&asn_DEF_Length,
 		0,	/* Defer constraints checking to the member type */
 		0,	/* PER is not compiled, use -gen-PER */
 		0,
-		"pathsToRoles"
+		"numberOfPrioritizedPathsToRoles"
+		},
+	{ ATF_NOFLAGS, 0, offsetof(struct TargetsDelegations, prioritizedPathsToRoles),
+		(ASN_TAG_CLASS_CONTEXT | (5 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_PrioritizedPathsToRoles,
+		0,	/* Defer constraints checking to the member type */
+		0,	/* PER is not compiled, use -gen-PER */
+		0,
+		"prioritizedPathsToRoles"
 		},
 };
 static ber_tlv_tag_t asn_DEF_TargetsDelegations_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static asn_TYPE_tag2member_t asn_MAP_TargetsDelegations_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* keys at 55 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* roles at 57 */
-    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 } /* pathsToRoles at 60 */
+    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* numberOfKeys at 65 */
+    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* keys at 66 */
+    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* numberOfRoles at 68 */
+    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 }, /* roles at 69 */
+    { (ASN_TAG_CLASS_CONTEXT | (4 << 2)), 4, 0, 0 }, /* numberOfPrioritizedPathsToRoles at 71 */
+    { (ASN_TAG_CLASS_CONTEXT | (5 << 2)), 5, 0, 0 } /* prioritizedPathsToRoles at 73 */
 };
 static asn_SEQUENCE_specifics_t asn_SPC_TargetsDelegations_specs_1 = {
 	sizeof(struct TargetsDelegations),
 	offsetof(struct TargetsDelegations, _asn_ctx),
 	asn_MAP_TargetsDelegations_tag2el_1,
-	3,	/* Count of tags in the map */
+	6,	/* Count of tags in the map */
 	0, 0, 0,	/* Optional elements (not needed) */
 	-1,	/* Start extensions */
 	-1	/* Stop extensions */
@@ -72,7 +102,7 @@ asn_TYPE_descriptor_t asn_DEF_TargetsDelegations = {
 		/sizeof(asn_DEF_TargetsDelegations_tags_1[0]), /* 1 */
 	0,	/* No PER visible constraints */
 	asn_MBR_TargetsDelegations_1,
-	3,	/* Elements count */
+	6,	/* Elements count */
 	&asn_SPC_TargetsDelegations_specs_1	/* Additional specs */
 };
 

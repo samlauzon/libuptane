@@ -7,8 +7,17 @@
 #include "PathsToRoles.h"
 
 static asn_TYPE_member_t asn_MBR_PathsToRoles_1[] = {
-	{ ATF_NOFLAGS, 0, offsetof(struct PathsToRoles, paths),
+	{ ATF_NOFLAGS, 0, offsetof(struct PathsToRoles, numberOfPaths),
 		(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_Length,
+		0,	/* Defer constraints checking to the member type */
+		0,	/* PER is not compiled, use -gen-PER */
+		0,
+		"numberOfPaths"
+		},
+	{ ATF_NOFLAGS, 0, offsetof(struct PathsToRoles, paths),
+		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_Paths,
 		0,	/* Defer constraints checking to the member type */
@@ -16,8 +25,17 @@ static asn_TYPE_member_t asn_MBR_PathsToRoles_1[] = {
 		0,
 		"paths"
 		},
+	{ ATF_NOFLAGS, 0, offsetof(struct PathsToRoles, numberOfRoles),
+		(ASN_TAG_CLASS_CONTEXT | (2 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_Length,
+		0,	/* Defer constraints checking to the member type */
+		0,	/* PER is not compiled, use -gen-PER */
+		0,
+		"numberOfRoles"
+		},
 	{ ATF_NOFLAGS, 0, offsetof(struct PathsToRoles, roles),
-		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
+		(ASN_TAG_CLASS_CONTEXT | (3 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_RoleNames,
 		0,	/* Defer constraints checking to the member type */
@@ -26,7 +44,7 @@ static asn_TYPE_member_t asn_MBR_PathsToRoles_1[] = {
 		"roles"
 		},
 	{ ATF_POINTER, 1, offsetof(struct PathsToRoles, terminating),
-		(ASN_TAG_CLASS_CONTEXT | (2 << 2)),
+		(ASN_TAG_CLASS_CONTEXT | (4 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_BOOLEAN,
 		0,	/* Defer constraints checking to the member type */
@@ -39,15 +57,17 @@ static ber_tlv_tag_t asn_DEF_PathsToRoles_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static asn_TYPE_tag2member_t asn_MAP_PathsToRoles_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* paths at 80 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* roles at 83 */
-    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 } /* terminating at 85 */
+    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* numberOfPaths at 99 */
+    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* paths at 100 */
+    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* numberOfRoles at 103 */
+    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 }, /* roles at 104 */
+    { (ASN_TAG_CLASS_CONTEXT | (4 << 2)), 4, 0, 0 } /* terminating at 106 */
 };
 static asn_SEQUENCE_specifics_t asn_SPC_PathsToRoles_specs_1 = {
 	sizeof(struct PathsToRoles),
 	offsetof(struct PathsToRoles, _asn_ctx),
 	asn_MAP_PathsToRoles_tag2el_1,
-	3,	/* Count of tags in the map */
+	5,	/* Count of tags in the map */
 	0, 0, 0,	/* Optional elements (not needed) */
 	-1,	/* Start extensions */
 	-1	/* Stop extensions */
@@ -72,7 +92,7 @@ asn_TYPE_descriptor_t asn_DEF_PathsToRoles = {
 		/sizeof(asn_DEF_PathsToRoles_tags_1[0]), /* 1 */
 	0,	/* No PER visible constraints */
 	asn_MBR_PathsToRoles_1,
-	3,	/* Elements count */
+	5,	/* Elements count */
 	&asn_SPC_PathsToRoles_specs_1	/* Additional specs */
 };
 

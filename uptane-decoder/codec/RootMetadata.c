@@ -7,8 +7,17 @@
 #include "RootMetadata.h"
 
 static asn_TYPE_member_t asn_MBR_RootMetadata_1[] = {
-	{ ATF_NOFLAGS, 0, offsetof(struct RootMetadata, keys),
+	{ ATF_NOFLAGS, 0, offsetof(struct RootMetadata, numberOfKeys),
 		(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_Length,
+		0,	/* Defer constraints checking to the member type */
+		0,	/* PER is not compiled, use -gen-PER */
+		0,
+		"numberOfKeys"
+		},
+	{ ATF_NOFLAGS, 0, offsetof(struct RootMetadata, keys),
+		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_PublicKeys,
 		0,	/* Defer constraints checking to the member type */
@@ -16,8 +25,17 @@ static asn_TYPE_member_t asn_MBR_RootMetadata_1[] = {
 		0,
 		"keys"
 		},
+	{ ATF_NOFLAGS, 0, offsetof(struct RootMetadata, numberOfRoles),
+		(ASN_TAG_CLASS_CONTEXT | (2 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_Length,
+		0,	/* Defer constraints checking to the member type */
+		0,	/* PER is not compiled, use -gen-PER */
+		0,
+		"numberOfRoles"
+		},
 	{ ATF_NOFLAGS, 0, offsetof(struct RootMetadata, roles),
-		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
+		(ASN_TAG_CLASS_CONTEXT | (3 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_TopLevelRoles,
 		0,	/* Defer constraints checking to the member type */
@@ -30,17 +48,19 @@ static ber_tlv_tag_t asn_DEF_RootMetadata_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static asn_TYPE_tag2member_t asn_MAP_RootMetadata_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* keys at 8 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 } /* roles at 9 */
+    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* numberOfKeys at 13 */
+    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* keys at 14 */
+    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* numberOfRoles at 15 */
+    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 } /* roles at 16 */
 };
 static asn_SEQUENCE_specifics_t asn_SPC_RootMetadata_specs_1 = {
 	sizeof(struct RootMetadata),
 	offsetof(struct RootMetadata, _asn_ctx),
 	asn_MAP_RootMetadata_tag2el_1,
-	2,	/* Count of tags in the map */
+	4,	/* Count of tags in the map */
 	0, 0, 0,	/* Optional elements (not needed) */
-	1,	/* Start extensions */
-	3	/* Stop extensions */
+	3,	/* Start extensions */
+	5	/* Stop extensions */
 };
 asn_TYPE_descriptor_t asn_DEF_RootMetadata = {
 	"RootMetadata",
@@ -62,7 +82,7 @@ asn_TYPE_descriptor_t asn_DEF_RootMetadata = {
 		/sizeof(asn_DEF_RootMetadata_tags_1[0]), /* 1 */
 	0,	/* No PER visible constraints */
 	asn_MBR_RootMetadata_1,
-	2,	/* Elements count */
+	4,	/* Elements count */
 	&asn_SPC_RootMetadata_specs_1	/* Additional specs */
 };
 

@@ -14,6 +14,7 @@
 #include "Keyid.h"
 #include "SignatureMethod.h"
 #include "Hash.h"
+#include "HexString.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
@@ -25,6 +26,7 @@ typedef struct Signature {
 	Keyid_t	 keyid;
 	SignatureMethod_t	 method;
 	Hash_t	 hash;
+	HexString_t	 value;
 	
 	/* Context for parsing across buffer boundaries */
 	asn_struct_ctx_t _asn_ctx;

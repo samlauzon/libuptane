@@ -11,14 +11,14 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
-#include <VisibleString.h>
+#include "Positive.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* UTCDateTime */
-typedef VisibleString_t	 UTCDateTime_t;
+typedef Positive_t	 UTCDateTime_t;
 
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_UTCDateTime;

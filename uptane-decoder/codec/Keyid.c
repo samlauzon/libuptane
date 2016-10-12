@@ -23,6 +23,7 @@ int
 Keyid_constraint(asn_TYPE_descriptor_t *td, const void *sptr,
 			asn_app_constraint_failed_f *ctfailcb, void *app_key) {
 	const HexString_t *st = (const HexString_t *)sptr;
+	size_t size;
 	
 	if(!sptr) {
 		_ASN_CTFAIL(app_key, td, sptr,
@@ -31,8 +32,10 @@ Keyid_constraint(asn_TYPE_descriptor_t *td, const void *sptr,
 		return -1;
 	}
 	
+	size = st->size;
 	
-	if(!check_permitted_alphabet_1(st)) {
+	if((size >= 1 && size <= 1024)
+		 && !check_permitted_alphabet_1(st)) {
 		/* Constraint check succeeded */
 		return 0;
 	} else {

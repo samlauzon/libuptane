@@ -7,71 +7,34 @@
 #include "DelegatedTargetsRoles.h"
 
 static asn_TYPE_member_t asn_MBR_DelegatedTargetsRoles_1[] = {
-	{ ATF_NOFLAGS, 0, offsetof(struct DelegatedTargetsRoles, rolename),
-		(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
-		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_RoleName,
+	{ ATF_POINTER, 0, 0,
+		(ASN_TAG_CLASS_UNIVERSAL | (16 << 2)),
+		0,
+		&asn_DEF_DelegatedTargetsRole,
 		0,	/* Defer constraints checking to the member type */
 		0,	/* PER is not compiled, use -gen-PER */
 		0,
-		"rolename"
-		},
-	{ ATF_POINTER, 1, offsetof(struct DelegatedTargetsRoles, filename),
-		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
-		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_StrictFilename,
-		0,	/* Defer constraints checking to the member type */
-		0,	/* PER is not compiled, use -gen-PER */
-		0,
-		"filename"
-		},
-	{ ATF_NOFLAGS, 0, offsetof(struct DelegatedTargetsRoles, keyids),
-		(ASN_TAG_CLASS_CONTEXT | (2 << 2)),
-		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_Keyids,
-		0,	/* Defer constraints checking to the member type */
-		0,	/* PER is not compiled, use -gen-PER */
-		0,
-		"keyids"
-		},
-	{ ATF_NOFLAGS, 0, offsetof(struct DelegatedTargetsRoles, threshold),
-		(ASN_TAG_CLASS_CONTEXT | (3 << 2)),
-		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_Threshold,
-		0,	/* Defer constraints checking to the member type */
-		0,	/* PER is not compiled, use -gen-PER */
-		0,
-		"threshold"
+		""
 		},
 };
 static ber_tlv_tag_t asn_DEF_DelegatedTargetsRoles_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
-static asn_TYPE_tag2member_t asn_MAP_DelegatedTargetsRoles_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* rolename at 63 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* filename at 68 */
-    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* keyids at 70 */
-    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 } /* threshold at 73 */
-};
-static asn_SEQUENCE_specifics_t asn_SPC_DelegatedTargetsRoles_specs_1 = {
+static asn_SET_OF_specifics_t asn_SPC_DelegatedTargetsRoles_specs_1 = {
 	sizeof(struct DelegatedTargetsRoles),
 	offsetof(struct DelegatedTargetsRoles, _asn_ctx),
-	asn_MAP_DelegatedTargetsRoles_tag2el_1,
-	4,	/* Count of tags in the map */
-	0, 0, 0,	/* Optional elements (not needed) */
-	-1,	/* Start extensions */
-	-1	/* Stop extensions */
+	0,	/* XER encoding is XMLDelimitedItemList */
 };
 asn_TYPE_descriptor_t asn_DEF_DelegatedTargetsRoles = {
 	"DelegatedTargetsRoles",
 	"DelegatedTargetsRoles",
-	SEQUENCE_free,
-	SEQUENCE_print,
-	SEQUENCE_constraint,
-	SEQUENCE_decode_ber,
-	SEQUENCE_encode_der,
-	SEQUENCE_decode_xer,
-	SEQUENCE_encode_xer,
+	SEQUENCE_OF_free,
+	SEQUENCE_OF_print,
+	SEQUENCE_OF_constraint,
+	SEQUENCE_OF_decode_ber,
+	SEQUENCE_OF_encode_der,
+	SEQUENCE_OF_decode_xer,
+	SEQUENCE_OF_encode_xer,
 	0, 0,	/* No PER support, use "-gen-PER" to enable */
 	0,	/* Use generic outmost tag fetcher */
 	asn_DEF_DelegatedTargetsRoles_tags_1,
@@ -82,7 +45,7 @@ asn_TYPE_descriptor_t asn_DEF_DelegatedTargetsRoles = {
 		/sizeof(asn_DEF_DelegatedTargetsRoles_tags_1[0]), /* 1 */
 	0,	/* No PER visible constraints */
 	asn_MBR_DelegatedTargetsRoles_1,
-	4,	/* Elements count */
+	1,	/* Single element */
 	&asn_SPC_DelegatedTargetsRoles_specs_1	/* Additional specs */
 };
 

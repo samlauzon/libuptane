@@ -18,8 +18,8 @@ static asn_TYPE_member_t asn_MBR_EncryptedSymmetricKey_1[] = {
 		},
 	{ ATF_NOFLAGS, 0, offsetof(struct EncryptedSymmetricKey, encryptedSymmetricKeyValue),
 		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
-		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_VisibleString,
+		+1,	/* EXPLICIT tag at current level */
+		&asn_DEF_BinaryData,
 		0,	/* Defer constraints checking to the member type */
 		0,	/* PER is not compiled, use -gen-PER */
 		0,
@@ -30,8 +30,8 @@ static ber_tlv_tag_t asn_DEF_EncryptedSymmetricKey_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static asn_TYPE_tag2member_t asn_MAP_EncryptedSymmetricKey_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* encryptedSymmetricKeyType at 44 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 } /* encryptedSymmetricKeyValue at 46 */
+    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* encryptedSymmetricKeyType at 56 */
+    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 } /* encryptedSymmetricKeyValue at 59 */
 };
 static asn_SEQUENCE_specifics_t asn_SPC_EncryptedSymmetricKey_specs_1 = {
 	sizeof(struct EncryptedSymmetricKey),

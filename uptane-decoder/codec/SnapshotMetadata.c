@@ -7,31 +7,31 @@
 #include "SnapshotMetadata.h"
 
 static asn_TYPE_member_t asn_MBR_SnapshotMetadata_1[] = {
-	{ ATF_NOFLAGS, 0, offsetof(struct SnapshotMetadata, filename),
+	{ ATF_NOFLAGS, 0, offsetof(struct SnapshotMetadata, numberOfSnapshotMetadataFiles),
 		(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_StrictFilename,
+		&asn_DEF_Length,
 		0,	/* Defer constraints checking to the member type */
 		0,	/* PER is not compiled, use -gen-PER */
 		0,
-		"filename"
+		"numberOfSnapshotMetadataFiles"
 		},
-	{ ATF_NOFLAGS, 0, offsetof(struct SnapshotMetadata, version),
+	{ ATF_NOFLAGS, 0, offsetof(struct SnapshotMetadata, snapshotMetadataFiles),
 		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_Version,
+		&asn_DEF_SnapshotMetadataFiles,
 		0,	/* Defer constraints checking to the member type */
 		0,	/* PER is not compiled, use -gen-PER */
 		0,
-		"version"
+		"snapshotMetadataFiles"
 		},
 };
 static ber_tlv_tag_t asn_DEF_SnapshotMetadata_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static asn_TYPE_tag2member_t asn_MAP_SnapshotMetadata_tag2el_1[] = {
-    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* filename at 8 */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 } /* version at 9 */
+    { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* numberOfSnapshotMetadataFiles at 11 */
+    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 } /* snapshotMetadataFiles at 13 */
 };
 static asn_SEQUENCE_specifics_t asn_SPC_SnapshotMetadata_specs_1 = {
 	sizeof(struct SnapshotMetadata),
@@ -39,8 +39,8 @@ static asn_SEQUENCE_specifics_t asn_SPC_SnapshotMetadata_specs_1 = {
 	asn_MAP_SnapshotMetadata_tag2el_1,
 	2,	/* Count of tags in the map */
 	0, 0, 0,	/* Optional elements (not needed) */
-	1,	/* Start extensions */
-	3	/* Stop extensions */
+	-1,	/* Start extensions */
+	-1	/* Stop extensions */
 };
 asn_TYPE_descriptor_t asn_DEF_SnapshotMetadata = {
 	"SnapshotMetadata",

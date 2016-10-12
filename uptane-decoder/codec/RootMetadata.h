@@ -11,6 +11,7 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
+#include "Length.h"
 #include "PublicKeys.h"
 #include "TopLevelRoles.h"
 #include <constr_SEQUENCE.h>
@@ -21,7 +22,9 @@ extern "C" {
 
 /* RootMetadata */
 typedef struct RootMetadata {
+	Length_t	 numberOfKeys;
 	PublicKeys_t	 keys;
+	Length_t	 numberOfRoles;
 	TopLevelRoles_t	 roles;
 	/*
 	 * This type is extensible,

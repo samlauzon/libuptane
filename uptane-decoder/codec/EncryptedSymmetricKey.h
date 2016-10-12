@@ -12,7 +12,7 @@
 
 /* Including external dependencies */
 #include "EncryptedSymmetricKeyType.h"
-#include <VisibleString.h>
+#include "BinaryData.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
@@ -22,7 +22,7 @@ extern "C" {
 /* EncryptedSymmetricKey */
 typedef struct EncryptedSymmetricKey {
 	EncryptedSymmetricKeyType_t	 encryptedSymmetricKeyType;
-	VisibleString_t	 encryptedSymmetricKeyValue;
+	BinaryData_t	 encryptedSymmetricKeyValue;
 	
 	/* Context for parsing across buffer boundaries */
 	asn_struct_ctx_t _asn_ctx;

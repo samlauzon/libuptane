@@ -5,6 +5,8 @@
 struct asn_TYPE_descriptor_s;	/* Forward declaration */
 
 extern struct asn_TYPE_descriptor_s asn_DEF_Natural;
+extern struct asn_TYPE_descriptor_s asn_DEF_SequenceOfNonces;
+extern struct asn_TYPE_descriptor_s asn_DEF_SequenceOfCurrentTimes;
 extern struct asn_TYPE_descriptor_s asn_DEF_ImageRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_VersionReport;
 extern struct asn_TYPE_descriptor_s asn_DEF_VehicleVersionManifest;
@@ -17,6 +19,9 @@ extern struct asn_TYPE_descriptor_s asn_DEF_ImageBlock;
 struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	/* From module CommonModule in CommonModule.asn1 */
 	&asn_DEF_Natural,	
+	/* From module TimeServerModule in TimeServerModule.asn1 */
+	&asn_DEF_SequenceOfNonces,	
+	&asn_DEF_SequenceOfCurrentTimes,	
 	/* From module BootloaderModule in BootloaderModule.asn1 */
 	&asn_DEF_ImageRequest,	
 	&asn_DEF_VersionReport,	

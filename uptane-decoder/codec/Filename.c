@@ -6,12 +6,44 @@
 
 #include "Filename.h"
 
+static int check_permitted_alphabet_1(const void *sptr) {
+	/* The underlying type is VisibleString */
+	const VisibleString_t *st = (const VisibleString_t *)sptr;
+	const uint8_t *ch = st->buf;
+	const uint8_t *end = ch + st->size;
+	
+	for(; ch < end; ch++) {
+		uint8_t cv = *ch;
+		if(!(cv >= 32 && cv <= 126)) return -1;
+	}
+	return 0;
+}
+
 int
 Filename_constraint(asn_TYPE_descriptor_t *td, const void *sptr,
 			asn_app_constraint_failed_f *ctfailcb, void *app_key) {
-	/* Replace with underlying type checker */
-	td->check_constraints = asn_DEF_VisibleString.check_constraints;
-	return td->check_constraints(td, sptr, ctfailcb, app_key);
+	const VisibleString_t *st = (const VisibleString_t *)sptr;
+	size_t size;
+	
+	if(!sptr) {
+		_ASN_CTFAIL(app_key, td, sptr,
+			"%s: value not given (%s:%d)",
+			td->name, __FILE__, __LINE__);
+		return -1;
+	}
+	
+	size = st->size;
+	
+	if((size >= 1 && size <= 32)
+		 && !check_permitted_alphabet_1(st)) {
+		/* Constraint check succeeded */
+		return 0;
+	} else {
+		_ASN_CTFAIL(app_key, td, sptr,
+			"%s: constraint failed (%s:%d)",
+			td->name, __FILE__, __LINE__);
+		return -1;
+	}
 }
 
 /*
