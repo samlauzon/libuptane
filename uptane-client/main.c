@@ -2,6 +2,7 @@
 #include "libuptane.h"  // 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 int main(int argc, char **argv) 
 {
@@ -9,7 +10,7 @@ int main(int argc, char **argv)
    uptane_init( ); // libUptane uptane_init 
    fprintf(stderr, "\n"); 
 
-   
+   sleep(10);
    
    return 0;
 }

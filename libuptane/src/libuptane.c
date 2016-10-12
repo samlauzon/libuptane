@@ -16,6 +16,10 @@
 char ncsha512[1024] = { 0 }; 
 char ncsha256[1024] = { 0 }; 
 
+ // To be removed/moved: 
+void test_encodings() ;
+
+
 void webdata_callback( const char *data ) 
 {
 	fprintf(stderr, "Received data from the web; \n");
@@ -66,13 +70,95 @@ void uptane_init( void )
 	send_raw_frame( 6, 6, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
 	send_raw_frame( 7, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
 
-	send_raw_isotp(); 
+	//send_raw_isotp(); 
+
+	////////
+	//  Test 
+	test_encodings(); 
+}
+
+
+
+#include "asn_application.h"
+#include "asn_internal.h"
+
+#include "Metadata.h"
+#include "Signed.h"
+#include "UTCDateTime.h"
+#include "TimestampMetadata.h"
+
+#include "ber_decoder.h"
+
+
+void test_encodings() 
+{
+	char *buf; 
+	char *filename = "directorTargetsMetadata.ber";
+	FILE *f = fopen(filename, "rb");
+	if( f == NULL )
+	{
+		fprintf(stderr, "Cannot open file \"%s\" - Exiting.\n", filename);
+		return; 
+	}
+
+	fseek(f, 0, SEEK_END);
+	int filesize = ftell(f);
+	buf = (char *) malloc((size_t)filesize + 1);
+	memset(buf, 0, filesize + 1);
+	rewind(f);
+	size_t size = fread(buf, 1, filesize, f);
+
+	if(size == 0 || size > filesize ) 
+	{
+		fprintf(stderr, "%s: Too large input\n", filename);
+		return;
+	}
+	// Lets get ugly and parse BER 
+   // ASSUME metadata from the git-go.
+		// That's signed, # sigs, signatures 
+   // signed = roletype, timestamp, version, signedbody
+		// signedbody = rootmetadata, targets, snapshot and timestamp 
+	// .. ok. go.
+	
+	char *start = buf; 
+	char *end = buf + size; 
+
+	int slbc = 0;   // size byte length count 
+	int sec_len = 0; 
+
+	fprintf(stderr, "Starting:\n"); 	// VIM: BRACE MOVE PARSER
+   while(0) { //buf != end) {
+		if( *buf == 0x30 ) { buf++; 
+			if( *buf & 0x80 ) { 
+				slbc = *buf & 0x7F; sec_len = 0; 
+				while(slbc--)  
+					sec_len |= (*(++buf))<<( (slbc) * 8); 
+
+			}
+		}
+	}
+	fprintf(stderr, "Done.\n"); 
+
+	
+	struct sha256_state md; 
+	sha256_init( &md ); 
+	sha256_process( &md, start+5, 0x127 ); 
+	sha256_done( &md, ncsha256 ); 
+
+	fprintf( stderr, " The SHA256 is: "); 
+	for(int i = 0; i <= 31; i++) { 
+		fprintf(stderr, "%X", 0xFF & ncsha256[i] ); 
+	}
+	fprintf(stderr, "\n\n"); 
+
 
 }
 
 
 void uptane_finish( void ) 
 {
+	fini_can(); 
+
 	web_fini(); 
 	fini_config(); 
 }

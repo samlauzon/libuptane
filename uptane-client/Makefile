@@ -2,7 +2,7 @@
 # Uptane Test Client
 #
 CC = gcc
-CFLAGS = -Wall -Werror -I../libuptane/include/ -L../ 
+CFLAGS = -Wall -Werror -I../libuptane/include/ -L../ -std=gnu99
 LDFLAGS = 
 LDLIBS = -luptane
 OUT = uptaneclient

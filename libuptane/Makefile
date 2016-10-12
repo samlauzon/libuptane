@@ -52,12 +52,21 @@ INTERFACE_OBJS += $(patsubst interfaces/config-file/%.c,interfaces/config-file/%
 INTERFACE_CFLAGS += -Iinterfaces/config-file
 INTERFACE_LIBRARIES += 
 
+
+########################
+# Codec ASN1
+########################
+INTERFACE_OBJS += $(patsubst interfaces/codec-asn1/%.c,interfaces/codec-asn1/%.o,$(wildcard interfaces/codec-asn1/*.c))
+INTERFACE_OBJS += $(patsubst interfaces/codec-asn1/codec/%.c,interfaces/codec-asn1/codec/%.o,$(wildcard interfaces/codec-asn1/codec/*.c))
+INTERFACE_CFLAGS += -Iinterfaces/codec-asn1 -Iinterfaces/codec-asn1/codec
+INTERFACE_LIBRARIES += 
+
 ########################
 # Core Build
 ########################
 # Definitions
 CC = gcc
-CFLAGS = -std=c11 -Wall -fpic -I./include -Iinterfaces/include $(INTERFACE_CFLAGS) 
+CFLAGS = -std=gnu99 -Wall -fpic -I./include -Iinterfaces/include $(INTERFACE_CFLAGS) 
 LDFLAGS = -shared 
 OUTPUT = libuptane.so 
 # Core library source + Interfaces

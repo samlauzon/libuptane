@@ -9,3 +9,8 @@ void init_can( void )
 
 }
 
+void fini_can( void ) 
+{
+	fini_socketcan();
+}
+
