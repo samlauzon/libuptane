@@ -51,6 +51,7 @@ int s_isotp = 0;
 int status_id = 1; // The CAN ID we broadcast our status on
 status_t status = STATUS_ONLINE; 
 
+struct canfd_frame *recv_buf; 
 
 int num_targets = 0; 
 int *target_ids = NULL; 
@@ -60,7 +61,7 @@ char *cfg_str = NULL;
 void socketcan_send_status( unsigned int status_id ) ;
 void socketcan_read( void ) ;
 void socketcan_isotp_transmit( int target, char *data, int size ); 
-void socketcan_isotp_receive( void ); 
+void socketcan_isotp_receive(  int target, char *dest, int *size  ); 
 
 
 //
@@ -265,10 +266,11 @@ void socketcan_send_status( unsigned int status_id )
 //   A Read thread to poll the CAN channel
 //    set s_read to have the thread exit 
 //
+
+
 void socketcan_read( void ) 
 {
 	struct canfd_frame frame;
-	struct canfd_frame *recv_buf; 
 
 	int nbytes; 
 
@@ -316,13 +318,14 @@ void socketcan_read( void )
 				{ 
 					fprintf(stderr, "[can-socketcan|read] target 0x%X has status %d\n", target_ids[n], frame.data[3]); 
 					// wish memcpy worked 
-					recv_buf[n].data[0] = frame.data[0] ;
-					recv_buf[n].data[1] = frame.data[1] ;
-					recv_buf[n].data[2] = frame.data[2] ;
-					recv_buf[n].data[3] = frame.data[3]  ;
+					recv_buf[n].data[0] = frame.data[0];
+					recv_buf[n].data[1] = frame.data[1];
+					recv_buf[n].data[2] = frame.data[2];
+					recv_buf[n].data[3] = frame.data[3];
 				}
 			}
 		}
+
 
 
 	}
@@ -344,6 +347,19 @@ void socketcan_isotp_transmit( int target, char *data, int size )
 	addr_isotp.can_addr.tp.tx_id = status_id +1;  // One above status
 	addr_isotp.can_addr.tp.rx_id = target_ids[target] + 1; 
 
+	int p;
+	
+
+
+	while(1) 
+	{
+		if( recv_buf != NULL ) {
+			p = recv_buf[target].data[3];
+		}
+
+		if( p == 1 )
+			break;
+	}
 	//fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
 	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
 	{ 
@@ -355,15 +371,15 @@ void socketcan_isotp_transmit( int target, char *data, int size )
 
 }
 
-void socketcan_isotp_receive( void ) 
+void socketcan_isotp_receive( int target, char *dest, int *size ) 
 {
    unsigned char msg[5000]; // 4095 max anyway? 
    int nbytes;
 
 	addr_isotp.can_family = AF_CAN;
 	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
-	addr_isotp.can_addr.tp.tx_id = 0x601;  // One above status
-	addr_isotp.can_addr.tp.rx_id = 0x201;  
+	addr_isotp.can_addr.tp.tx_id = target_ids[target] + 1;  // One above status
+	addr_isotp.can_addr.tp.rx_id = status_id + 1;  
 
 	//fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
 	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 

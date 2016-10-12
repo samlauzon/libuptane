@@ -64,22 +64,13 @@ void uptane_init( void )
 
 	init_can(); 
 
-	// Broadcast some wakeup garbage
-	send_raw_frame( 1, 1, 0xFF ); 
-	send_raw_frame( 2, 2, 0xFF, 0xFF ); 
-	send_raw_frame( 3, 3, 0xFF, 0xFF, 0xFF ); 
-	send_raw_frame( 4, 4, 0xFF, 0xFF, 0xFF, 0xFF ); 
-	send_raw_frame( 5, 5, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
-	send_raw_frame( 6, 6, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
-	send_raw_frame( 7, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF ); 
-
-	//send_raw_isotp(); 
-   socketcan_isotp_transmit( 1, NULL, 1 ); 
-
 	////////
 	//  Test the ASN.1 Parsing
 	//
-	  test_encodings(); 
+	test_encodings(); 
+
+	pthread_t g;
+	pthread_create( &g, NULL, socketcan_isotp_transmit, 1, NULL, 1); 
 
 	//pthread_t th_tprecv;
 	//pthread_create( &th_tprecv, NULL, socketcan_isotp_receive );
