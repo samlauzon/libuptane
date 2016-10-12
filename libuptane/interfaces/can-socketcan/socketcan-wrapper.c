@@ -22,8 +22,12 @@
 // Things that shouldn't be here
 typedef enum StatusByte {  // Sure. 
 	STATUS_ONLINE = 1, 
-	STATUS_READY,
+	STATUS_SEND_REQUEST,
+	STATUS_ACK_OUI,  // Snooty CAN channel 
+	STATUS_ACK_NON,  // Oh non!! 
+	STATUS_UPLOADING,
 	STATUS_DOWNLOADING,
+	STATUS_NEXT,
 	STATUS_COMPLETE
 } status_t; 
 
@@ -33,15 +37,19 @@ int isotp_sock;		// ISO-TP Socket Handle
 
 pthread_t th_status; // Status Thread Handle
 pthread_t th_read; // Read Thread Handle
+pthread_t th_isotp; // ISO-TP Thread Handle
 
 int s_status = 0;  // Thread control (status) 
 int s_read = 0;    // Thread control (read) 
+int s_isotp = 0; 
 
 status_t status = STATUS_ONLINE; 
 
 // Forward Declarations 
 void socketcan_send_status( unsigned int status_id ) ;
 void socketcan_read( void ) ;
+void socketcan_isotp_transmit( void ); 
+void socketcan_isotp_receive( void ); 
 
 
 //
@@ -148,7 +156,12 @@ void fini_socketcan( void )
 	pthread_join(th_read, NULL); 
 }
 
-
+//
+// send_raw_frame 
+//   id, dlc, byte[dlc], byte[dlc-1] ... 
+//  
+//  Caution: Doesn't verify data 
+//
 void send_raw_frame( int id, int dlc, ... )
 {
 	struct canfd_frame frame; 
@@ -166,6 +179,9 @@ void send_raw_frame( int id, int dlc, ... )
 	write(can_sock, &frame, CAN_MTU);
 }
 
+//
+// Fix me. 
+//
 void send_raw_isotp( ) 
 {
 	char *buf; 
@@ -194,6 +210,9 @@ void send_raw_isotp( )
 	fclose(f); 
 }
 
+//
+// Send a status message
+//
 void socketcan_send_status( unsigned int status_id ) 
 {
 	while( s_status ) 
@@ -206,11 +225,43 @@ void socketcan_send_status( unsigned int status_id )
 	pthread_exit(s_status);  // Poor reuse
 }
 
+
+
+//
+// socketcan_read
+//   A Read thread to poll the CAN channel
+//    set s_read to have the thread exit 
+//
 void socketcan_read( void ) 
 {
 	struct canfd_frame frame;
+	struct canfd_frame *recv_buf; 
 
-	int nbytes ; 
+	int nbytes; 
+
+	int num_targets = get_config_int("socketcan.num_targets");
+
+	if(num_targets == -1)  // If not defined 
+		num_targets = 0; 
+
+	int *target_ids = (int *)malloc( (size_t)num_targets ); 
+
+	char *cfg_str = (char *)malloc( (size_t)strlen("socketcan.target_id_9999")); // haha.
+	
+	fprintf(stderr, "[can-socketcan|read] %d targets\n", num_targets); 
+
+	for( int i = 1; i <= num_targets; i++ )  
+	{
+		sprintf(cfg_str, "socketcan.target_id_%d", i); 
+		target_ids[i] = get_config_int(cfg_str);  
+		fprintf(stderr, "[can-socketcan|read] Looking for 0x%x\n", target_ids[i]);
+	}
+
+	recv_buf = (struct canfd_frame *)malloc(sizeof(struct canfd_frame) * num_targets); 
+	memset(recv_buf, 0, sizeof(struct canfd_frame) * num_targets); 
+
+
+	int debug_framedump = get_config_int("socketcan.debug");
 
 	while(s_read) 
 	{
@@ -226,12 +277,43 @@ void socketcan_read( void )
 			continue;  // Bad Idea. 
 		}
 
-		fprintf(stderr, "Frame: [0x%X] [%d] ", frame.can_id, frame.len); 
-		for(int i = 0; i <= frame.len-1; i++)
-			fprintf(stderr, "0x%.2X ", frame.data[i]&0xFF); 
+		// Act like a jerk if you define stuff in the config file 
+		if(debug_framedump != -1) 
+		{
+			fprintf(stderr, "Frame: [0x%X] [%d] \n", frame.can_id, frame.len); 
+			for(int i = 0; i <= frame.len-1; i++)
+				fprintf(stderr, "0x%.2X ", frame.data[i]&0xFF); 
+			fprintf(stderr, "\n"); 
+		}
 
-		fprintf(stderr, "\n"); 
+		// Parse list of targets 
+	   for(int n = 0; n <= num_targets; n++) 
+		{
+			// If we found a matching ID 
+			if( frame.can_id == target_ids[n] ) 
+			{
+				// Is it a new frame, or the same? 
+				if( memcmp( &recv_buf[n], &frame, sizeof( struct can_frame )) ) 
+				{
+					recv_buf[n] = frame; 
+					fprintf(stderr, "[can-socketcan|read] target 0x%X has status %d\n", target_ids[n], frame.data[3]); 
+				}
+			}
+		}
+	
 
 	}
 	pthread_exit(s_read); 
 }
+
+void socketcan_isotp_transmit( void )
+{
+
+}
+
+void socketcan_isotp_receive( void ) 
+{
+
+}
+
+
