@@ -76,7 +76,7 @@ void init_socketcan( void )
 	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
 	addr_isotp.can_addr.tp.tx_id = 0xFFE;  // NOT GOOD ? 
 	addr_isotp.can_addr.tp.rx_id = 0xF0E;  // NOT GOOD . 
-	
+
 
 	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
 	{ 
@@ -98,7 +98,7 @@ void init_socketcan( void )
 	// ifr.ifr_flags &= ~IFF_UP;
 	// ioctl(can_sock, SIOCSIFFLAGS, &ifr); 
 
-   // struct ifreq ift; 
+	// struct ifreq ift; 
 	// ioctl(can_sock, SIOCGIFFLAGS, &ift); 
 	//  if( ift.ifr_flags == IFF_UP ) { fprintf(stderr, "\nUp\n"); }
 	//  else { fprintf(stderr, "\nDown\n");  }
@@ -114,7 +114,7 @@ void init_socketcan( void )
 	// The above reset code always returns 'down' 
 	// even when run as root.  No idea how to determine state of the bus (!)
 	//
-	
+
 	// Setup the status message 
 	int status_id = get_config_int("socketcan.status_id"); 
 
@@ -131,7 +131,7 @@ void init_socketcan( void )
 		fprintf(stderr, "[can-socketcan] Couild not create read thread\n"); 
 		s_read = 0; 
 	}
-	
+
 
 }
 
@@ -143,7 +143,7 @@ void fini_socketcan( void )
 	s_status = 0; 
 	s_read = 0; 
 
-   // Wrangle in the status thread
+	// Wrangle in the status thread
 	pthread_join(th_status, NULL); 
 	pthread_join(th_read, NULL); 
 }
@@ -199,8 +199,8 @@ void socketcan_send_status( unsigned int status_id )
 	while( s_status ) 
 	{
 		send_raw_frame( status_id & 0x7FF, 4, 0, 0, 0, status ); 
- 	  //usleep(100000); 
-	  // This is too long because of the send_raw_frame overhead. 
+		//usleep(100000); 
+		// This is too long because of the send_raw_frame overhead. 
 		usleep(99900); 
 	}
 	pthread_exit(s_status);  // Poor reuse
@@ -227,7 +227,7 @@ void socketcan_read( void )
 		}
 
 		fprintf(stderr, "Frame: [0x%X] [%d] ", frame.can_id, frame.len); 
-	   for(int i = 0; i <= frame.len-1; i++)
+		for(int i = 0; i <= frame.len-1; i++)
 			fprintf(stderr, "0x%.2X ", frame.data[i]&0xFF); 
 
 		fprintf(stderr, "\n"); 
