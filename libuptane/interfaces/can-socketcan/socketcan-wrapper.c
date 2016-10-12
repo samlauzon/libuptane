@@ -5,6 +5,8 @@
 #include <string.h>
 #include <libgen.h>
 #include <stdarg.h>
+#include <signal.h>
+#include <fcntl.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -153,7 +155,11 @@ void fini_socketcan( void )
 
 	// Wrangle in the status thread
 	pthread_join(th_status, NULL); 
+	//fprintf(stderr, "Status thread returned %d\n", s_status); 
+
 	pthread_join(th_read, NULL); 
+	//fprintf(stderr, "Read thread returned %d\n", s_read); 
+
 }
 
 //
@@ -263,12 +269,14 @@ void socketcan_read( void )
 
 	int debug_framedump = get_config_int("socketcan.debug");
 
+	int flags = fcntl(can_sock, F_GETFL, 0);
+	fcntl(can_sock, F_SETFL, flags | O_NONBLOCK);
+
 	while(s_read) 
 	{
 		nbytes = read(can_sock, &frame, sizeof(struct can_frame));
 
-		if (nbytes < 0) {
-			perror("can raw socket read");
+		if (nbytes < 0 || nbytes == -1 ) {
 			continue; // Bad idea. 
 		}
 

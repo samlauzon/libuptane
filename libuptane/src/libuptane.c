@@ -59,9 +59,12 @@ void uptane_init( void )
 	init_config(); 
 
 	web_init(webdata_callback); 
+	// Uncomment and it'll output the webpage, sha512 and sha256 of the data
 	//	web_fetch("https://www.samlauzon.com"); 
 
 	init_can(); 
+
+	// Broadcast some wakeup garbage
 	send_raw_frame( 1, 1, 0xFF ); 
 	send_raw_frame( 2, 2, 0xFF, 0xFF ); 
 	send_raw_frame( 3, 3, 0xFF, 0xFF, 0xFF ); 
@@ -73,8 +76,9 @@ void uptane_init( void )
 	//send_raw_isotp(); 
 
 	////////
-	//  Test 
-	test_encodings(); 
+	//  Test the ASN.1 Parsing
+	//
+	//  test_encodings(); 
 }
 
 
