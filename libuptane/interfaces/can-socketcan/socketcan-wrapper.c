@@ -13,9 +13,9 @@
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 
-
 #include <linux/if.h>
 #include <linux/can.h>
+#include <linux/can/error.h> 
 #include <linux/can/raw.h>
 #include <linux/can/isotp.h>
 
@@ -23,15 +23,16 @@
 
 // Things that shouldn't be here
 typedef enum StatusByte {  // Sure. 
+	STATUS_OFFLINE = 0,
 	STATUS_ONLINE = 1, 
 	STATUS_SEND_REQUEST,
-	STATUS_ACK_OUI,  // Snooty CAN channel 
-	STATUS_ACK_NON,  // Oh non!! 
 	STATUS_UPLOADING,
 	STATUS_DOWNLOADING,
 	STATUS_NEXT,
 	STATUS_COMPLETE
 } status_t; 
+
+#define STATUS_BYTE 3
 
 // Module Specific 
 int can_sock; 			// Can Socket Handle
@@ -49,9 +50,10 @@ int s_read = 0;    // Thread control (read)
 int s_isotp = 0; 
 
 int status_id = 1; // The CAN ID we broadcast our status on
-status_t status = STATUS_ONLINE; 
 
 struct canfd_frame *recv_buf; 
+
+struct canfd_frame status_frame; 
 
 int num_targets = 0; 
 int *target_ids = NULL; 
@@ -62,6 +64,7 @@ void socketcan_send_status( unsigned int status_id ) ;
 void socketcan_read( void ) ;
 void socketcan_isotp_transmit( int target, char *data, int size ); 
 void socketcan_isotp_receive(  int target, char *dest, int *size  ); 
+void socketcan_flush_status( ); 
 
 
 //
@@ -91,6 +94,12 @@ void init_socketcan( void )
 
 	addr_isotp.can_family = AF_CAN;
 	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
+	static struct can_isotp_options opts;
+	opts.frame_txtime = 250000;
+	opts.flags |= CAN_ISOTP_FORCE_TXSTMIN;
+	int force_tx_stmin = 250000; 
+	setsockopt(isotp_sock, SOL_CAN_ISOTP, CAN_ISOTP_OPTS, &opts, sizeof(opts));
+	setsockopt(isotp_sock, SOL_CAN_ISOTP, CAN_ISOTP_TX_STMIN, &force_tx_stmin, sizeof(force_tx_stmin));
 
 	 // This is what it's relying on now 
 	//addr_isotp.can_addr.tp.tx_id = 1537;  // NOT GOOD ? 
@@ -104,6 +113,15 @@ void init_socketcan( void )
 
 	addr_can.can_family = AF_CAN;
 	addr_can.can_ifindex = ifr.ifr_ifindex;
+
+	can_err_mask_t err_mask = 0x1FF; // All errors
+
+	setsockopt(can_sock, SOL_CAN_RAW, CAN_RAW_ERR_FILTER, &err_mask, sizeof(err_mask)); 
+
+//	int recv_own_msgs = 1; 
+//	setsockopt(can_sock, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS,
+//			&recv_own_msgs, sizeof(recv_own_msgs));
+
 
 	if (bind(can_sock, (struct sockaddr *)&addr_can, sizeof(addr_can)) < 0) 
 	{
@@ -170,7 +188,9 @@ void init_socketcan( void )
 		s_read = 0; 
 	}
 
-
+		// Set Status to ONLINE
+	status_frame.data[STATUS_BYTE] = STATUS_ONLINE; 
+   socketcan_flush_status(); 
 }
 
 //
@@ -178,6 +198,9 @@ void init_socketcan( void )
 //
 void fini_socketcan( void ) 
 {
+	status_frame.data[STATUS_BYTE] = STATUS_OFFLINE; 
+   socketcan_flush_status(); 
+
 	s_status = 0; 
 	s_read = 0; 
 
@@ -188,6 +211,8 @@ void fini_socketcan( void )
 	pthread_join(th_read, NULL); 
 	//fprintf(stderr, "Read thread returned %d\n", s_read); 
 
+	close(can_sock);
+	close(isotp_sock);
 }
 
 //
@@ -218,8 +243,9 @@ void send_raw_frame( int id, int dlc, ... )
 //
 void send_raw_isotp( ) 
 {
+	status_frame.data[STATUS_BYTE] = STATUS_UPLOADING; 
 	char *buf; 
-	char *filename = "metadata.ber";
+	char *filename = "logo.png";
 	FILE *f = fopen(filename, "r");
 	if( f == NULL )
 	{
@@ -239,11 +265,38 @@ void send_raw_isotp( )
 		fprintf(stderr, "%s: Too large input\n", filename);
 		return;
 	}
+	status_frame.data[2] = size / 4090; 
+	if( size % 4090 ) { status_frame.data[2]++; } // roundup. 
 
-	write(isotp_sock, buf, filesize);  
+	int frames = status_frame.data[2]; 
+	int datasent = 0; 
+	for( ; status_frame.data[2] >= 1; status_frame.data[2]-- ) 
+	{
+		fprintf(stderr, "Writing %d of %d\n", datasent, size); 
+		if(size - datasent <= 4090) 
+		{
+			write(isotp_sock, buf + datasent, (size-datasent));
+			datasent += (size-datasent); 
+		}
+		else
+		{
+			write(isotp_sock, buf + datasent, 4090);  
+			datasent += 4090; 
+		}
+		
+	}
+   fprintf(stderr, " Sent %d bytes.\n ", datasent); 
+	status_frame.data[STATUS_BYTE] = STATUS_ONLINE; 
+   socketcan_flush_status( );
 	fclose(f); 
 }
 
+
+void socketcan_flush_status( ) 
+{
+	send_raw_frame( status_id & 0x7FF, 4, status_frame.data[0], 
+			status_frame.data[1], status_frame.data[2], status_frame.data[3] );
+}
 //
 // Send a status message
 //
@@ -251,10 +304,10 @@ void socketcan_send_status( unsigned int status_id )
 {
 	while( s_status ) 
 	{
-		send_raw_frame( status_id & 0x7FF, 4, 0, 0, 0, status ); 
+		send_raw_frame( status_id & 0x7FF, 4, 0, 0, status_frame.data[2], status_frame.data[3] ); 
 		//usleep(100000); 
 		// This is too long because of the send_raw_frame overhead. 
-		usleep(249900); 
+		usleep(99910); 
 	}
 	pthread_exit(s_status);  // Poor reuse
 }
@@ -316,8 +369,16 @@ void socketcan_read( void )
 				if( recv_buf[n].data[0] != frame.data[0] || recv_buf[n].data[1] != frame.data[1] ||
 						recv_buf[n].data[2] != frame.data[2] || recv_buf[n].data[3] != frame.data[3] )
 				{ 
+					
 					fprintf(stderr, "[can-socketcan|read] target 0x%X has status %d\n", target_ids[n], frame.data[3]); 
 					// wish memcpy worked 
+					//
+					if( recv_buf[n].data[2] == 2 ) 
+					{
+						pthread_t g;
+						pthread_create( &g, NULL, socketcan_isotp_transmit, 1, NULL, 1); 
+
+					}
 					recv_buf[n].data[0] = frame.data[0];
 					recv_buf[n].data[1] = frame.data[1];
 					recv_buf[n].data[2] = frame.data[2];
@@ -348,8 +409,6 @@ void socketcan_isotp_transmit( int target, char *data, int size )
 	addr_isotp.can_addr.tp.rx_id = target_ids[target] + 1; 
 
 	int p;
-	
-
 
 	while(1) 
 	{
@@ -360,7 +419,7 @@ void socketcan_isotp_transmit( int target, char *data, int size )
 		if( p == 1 )
 			break;
 	}
-	//fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
+	fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
 	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
 	{ 
 		perror("bind isotp");
@@ -378,10 +437,14 @@ void socketcan_isotp_receive( int target, char *dest, int *size )
 
 	addr_isotp.can_family = AF_CAN;
 	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
-	addr_isotp.can_addr.tp.tx_id = target_ids[target] + 1;  // One above status
+	if( target != -1 ) 
+		addr_isotp.can_addr.tp.tx_id = target_ids[target] + 1;  // One above status
+	else
+		addr_isotp.can_addr.tp.tx_id = 0x200 + 1;  // There is no target 0. 
+
 	addr_isotp.can_addr.tp.rx_id = status_id + 1;  
 
-	//fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
+	fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
 	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
 	{ 
 		perror("bind isotp");
@@ -394,7 +457,7 @@ void socketcan_isotp_receive( int target, char *dest, int *size )
 			for (int i=0; i < nbytes; i++)
 				printf("%02X ", msg[i]);
 		printf("\n");
-	} while (0);
+	} while (1);
 }
 
 

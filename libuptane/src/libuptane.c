@@ -69,11 +69,9 @@ void uptane_init( void )
 	//
 	test_encodings(); 
 
-	pthread_t g;
-	pthread_create( &g, NULL, socketcan_isotp_transmit, 1, NULL, 1); 
 
-	//pthread_t th_tprecv;
-	//pthread_create( &th_tprecv, NULL, socketcan_isotp_receive );
+	pthread_t th_tprecv;
+	pthread_create( &th_tprecv, NULL, socketcan_isotp_receive, 1, NULL, NULL );
 }
 
 
@@ -221,9 +219,8 @@ void test_encodings()
 
 void uptane_finish( void ) 
 {
-	fini_can(); 
-
 	web_fini(); 
+	fini_can(); 
 	fini_config(); 
 }
 
