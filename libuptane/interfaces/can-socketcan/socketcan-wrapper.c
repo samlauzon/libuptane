@@ -21,6 +21,15 @@
 
 #include "config.h"
 
+typedef struct isotp_header_frame 
+{
+	int magic_number;
+	int data_type;
+	int total_size;
+   int frame_count; 
+	char filename[128]; // ugh. 
+} isotp_header_t; 
+
 // Things that shouldn't be here
 typedef enum StatusByte {  // Sure. 
 	STATUS_OFFLINE = 0,
@@ -265,10 +274,21 @@ void send_raw_isotp( )
 		fprintf(stderr, "%s: Too large input\n", filename);
 		return;
 	}
+
 	status_frame.data[2] = size / 4090; 
 	if( size % 4090 ) { status_frame.data[2]++; } // roundup. 
 
 	int frames = status_frame.data[2]; 
+
+	isotp_header_t *header = (isotp_header_t *)malloc((size_t)sizeof(isotp_header_t)); ; 
+	header->data_type = 1; 
+	header->total_size = size;
+	header->frame_count = frames;
+	snprintf(header->filename, 255, "test.png"); 
+
+	write( isotp_sock, header, sizeof(isotp_header_t)); 
+	free(header); 
+
 	int datasent = 0; 
 	for( ; status_frame.data[2] >= 1; status_frame.data[2]-- ) 
 	{
@@ -437,12 +457,21 @@ void socketcan_isotp_receive( int target, char *dest, int *size )
 
 	addr_isotp.can_family = AF_CAN;
 	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
-	if( target != -1 ) 
-		addr_isotp.can_addr.tp.tx_id = target_ids[target] + 1;  // One above status
-	else
-		addr_isotp.can_addr.tp.tx_id = 0x200 + 1;  // There is no target 0. 
+	/////////
+	if( get_config_int("socketcan.primary_id") != -1 ) 
+	{
+		addr_isotp.can_addr.tp.tx_id = status_id + 1; 
+		addr_isotp.can_addr.tp.rx_id = get_config_int("socketcan.primary_id") + 1; 
+	}
+	else 
+	{
+		if( target != -1 ) 
+			addr_isotp.can_addr.tp.tx_id = target_ids[target] + 1;  // One above status
+		else
+			addr_isotp.can_addr.tp.tx_id = 0x200 + 1;  // There is no target 0. 
 
-	addr_isotp.can_addr.tp.rx_id = status_id + 1;  
+		addr_isotp.can_addr.tp.rx_id = status_id + 1;  
+	}
 
 	fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
 	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
@@ -451,11 +480,26 @@ void socketcan_isotp_receive( int target, char *dest, int *size )
 		return 1; 
 	}
 
+	FILE *output; 
 	do {
 		nbytes = read(isotp_sock, msg, 5000);
 		if (nbytes > 0 && nbytes < 5000)
+		{
 			for (int i=0; i < nbytes; i++)
 				printf("%02X ", msg[i]);
+
+			if(output != NULL) 
+				fwrite(msg, nbytes, 1, output);
+
+			if( nbytes == sizeof(isotp_header_t) ) 
+			{
+				printf("HEADER DETECTED"); 
+				isotp_header_t hdr; 
+				memcpy( &hdr, msg, sizeof(isotp_header_t)); 
+				output = fopen( hdr.filename, "w+"); 
+			}
+
+		}
 		printf("\n");
 	} while (1);
 }
