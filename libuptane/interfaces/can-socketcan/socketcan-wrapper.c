@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+// Things that shouldn't be here
+//   ............. These have terrible names. 
 typedef struct isotp_header_frame 
 {
 	int magic_number;
@@ -30,7 +32,14 @@ typedef struct isotp_header_frame
 	char filename[128]; // ugh. 
 } isotp_header_t; 
 
-// Things that shouldn't be here
+#define MAGIC_NUMBER 0x55707448  // "UptH"
+
+typedef enum DataType { 
+	METADATA = 0,
+	IMAGEDATA,
+	IRRELEVANT_DATA		// Relevant?
+} datatype_t; 
+
 typedef enum StatusByte {  // Sure. 
 	STATUS_OFFLINE = 0,
 	STATUS_ONLINE = 1, 
@@ -42,6 +51,8 @@ typedef enum StatusByte {  // Sure.
 } status_t; 
 
 #define STATUS_BYTE 3
+
+// This stuff is probably supposed to be here :: 
 
 // Module Specific 
 int can_sock; 			// Can Socket Handle
@@ -275,17 +286,22 @@ void send_raw_isotp( )
 		return;
 	}
 
+	// figure out how large the payload is in total, 
+	//   (Each packet is 4090 max, Any leftover needs it's own packet.. 
 	status_frame.data[2] = size / 4090; 
 	if( size % 4090 ) { status_frame.data[2]++; } // roundup. 
 
+	// Use this to count, too .. 
 	int frames = status_frame.data[2]; 
 
-	isotp_header_t *header = (isotp_header_t *)malloc((size_t)sizeof(isotp_header_t)); ; 
-	header->data_type = 1; 
+	// Setup a header to tell the target what it's going to be getting
+	// 
+	isotp_header_t *header = (isotp_header_t *)malloc((size_t)sizeof(isotp_header_t));  
+	header->magic_number = MAGIC_NUMBER; 
+	header->data_type = IMAGEDATA; 
 	header->total_size = size;
 	header->frame_count = frames;
 	snprintf(header->filename, 255, "test.png"); 
-
 	write( isotp_sock, header, sizeof(isotp_header_t)); 
 	free(header); 
 
@@ -311,12 +327,18 @@ void send_raw_isotp( )
 	fclose(f); 
 }
 
-
+// 
+// Force a message out without waiting for the cyclic period
+//    Handy for things that occur off-period
+//     .. like iso-tp sessions, or exiting 
+//
 void socketcan_flush_status( ) 
 {
 	send_raw_frame( status_id & 0x7FF, 4, status_frame.data[0], 
 			status_frame.data[1], status_frame.data[2], status_frame.data[3] );
 }
+
+
 //
 // Send a status message
 //
@@ -332,15 +354,11 @@ void socketcan_send_status( unsigned int status_id )
 	pthread_exit(s_status);  // Poor reuse
 }
 
-
-
 //
 // socketcan_read
 //   A Read thread to poll the CAN channel
 //    set s_read to have the thread exit 
 //
-
-
 void socketcan_read( void ) 
 {
 	struct canfd_frame frame;
@@ -450,14 +468,17 @@ void socketcan_isotp_transmit( int target, char *data, int size )
 
 }
 
+#define RECV_BUF_SIZE 5000 
+
 void socketcan_isotp_receive( int target, char *dest, int *size ) 
 {
-   unsigned char msg[5000]; // 4095 max anyway? 
+   unsigned char msg[RECV_BUF_SIZE]; // baggy static reception buffer 
    int nbytes;
 
+	// Setup the socket based on the target parameter 
 	addr_isotp.can_family = AF_CAN;
 	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
-	/////////
+
 	if( get_config_int("socketcan.primary_id") != -1 ) 
 	{
 		addr_isotp.can_addr.tp.tx_id = status_id + 1; 
@@ -473,7 +494,7 @@ void socketcan_isotp_receive( int target, char *dest, int *size )
 		addr_isotp.can_addr.tp.rx_id = status_id + 1;  
 	}
 
-	fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
+	//fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
 	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
 	{ 
 		perror("bind isotp");
@@ -481,26 +502,36 @@ void socketcan_isotp_receive( int target, char *dest, int *size )
 	}
 
 	FILE *output; 
+
+	// Header, <data>, [Footer?] 
 	do {
-		nbytes = read(isotp_sock, msg, 5000);
-		if (nbytes > 0 && nbytes < 5000)
+		nbytes = read(isotp_sock, msg, RECV_BUF_SIZE);
+		if (nbytes > 0 && nbytes < RECV_BUF_SIZE)
 		{
-			for (int i=0; i < nbytes; i++)
-				printf("%02X ", msg[i]);
+			// Debug ouput: 
+			//for (int i=0; i < nbytes; i++)
+			//	fprintf(stderr, "%02X ", msg[i]);
 
 			if(output != NULL) 
 				fwrite(msg, nbytes, 1, output);
 
+			// Received a header sized datagram? 
 			if( nbytes == sizeof(isotp_header_t) ) 
 			{
-				printf("HEADER DETECTED"); 
 				isotp_header_t hdr; 
 				memcpy( &hdr, msg, sizeof(isotp_header_t)); 
-				output = fopen( hdr.filename, "w+"); 
+
+				// If it has the magic number, it's likely the header
+				if( hdr.magic_number = MAGIC_NUMBER ) 
+				{
+					fprintf(stderr, "\n Received Header \n");
+					fprintf(stderr, " Data(%d) Size %d Frames %d File: %s ", hdr.data_type, 
+							hdr.total_size, hdr.frame_count, hdr.filename); 
+					output = fopen( hdr.filename, "w+");  // Open and blow out the file
+				}
 			}
 
 		}
-		printf("\n");
 	} while (1);
 }
 
