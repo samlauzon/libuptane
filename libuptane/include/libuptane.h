@@ -9,6 +9,8 @@ extern void uptane_init( void );
 extern void uptane_finish( void ); 
 
 // Application layer Callbacks 
+extern void send_isotp_file( int target, int data_type, char *filename ); 
+extern int check_status( int target ); 
 
 
 

@@ -64,10 +64,12 @@ struct ifreq ifr;
 pthread_t th_status; // Status Thread Handle
 pthread_t th_read; // Read Thread Handle
 pthread_t th_isotp; // ISO-TP Thread Handle
+pthread_t th_tprecv;  // ISO-TP Receive 
 
 int s_status = 0;  // Thread control (status) 
 int s_read = 0;    // Thread control (read) 
-int s_isotp = 0; 
+int s_isotp = 0;   // Send 
+int s_tprecv = 0;  // Receive
 
 int status_id = 1; // The CAN ID we broadcast our status on
 
@@ -82,10 +84,17 @@ char *cfg_str = NULL;
 // Forward Declarations 
 void socketcan_send_status( unsigned int status_id ) ;
 void socketcan_read( void ) ;
-void socketcan_isotp_transmit( int target, char *data, int size ); 
-void socketcan_isotp_receive(  int target, char *dest, int *size  ); 
+void send_isotp_file( int target, int data_type, char *filename );
+void socketcan_isotp_receive( int target, char *dest, int *size ); 
 void socketcan_flush_status( ); 
 
+int check_status( int target ) { 
+
+	if(target <= num_targets ) 
+		return recv_buf[target].data[3]; 
+	else
+		return -1;
+} 
 
 //
 // init 
@@ -208,6 +217,13 @@ void init_socketcan( void )
 		s_read = 0; 
 	}
 
+	s_tprecv = 1; 
+	if( pthread_create( &th_tprecv, NULL, socketcan_isotp_receive, 1, NULL, NULL ) ) 
+	{
+	  fprintf(stderr, "[can-socketcan] Could not create iso-tp receive thread\n"); 
+		s_tprecv = 0;
+	}
+
 		// Set Status to ONLINE
 	status_frame.data[STATUS_BYTE] = STATUS_ONLINE; 
    socketcan_flush_status(); 
@@ -261,15 +277,37 @@ void send_raw_frame( int id, int dlc, ... )
 //
 // Fix me. 
 //
-void send_raw_isotp( ) 
+void send_isotp_file( int target, int data_type, char *filename ) 
 {
+	addr_isotp.can_family = AF_CAN;
+	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
+	addr_isotp.can_addr.tp.tx_id = status_id +1;  // One above status
+	addr_isotp.can_addr.tp.rx_id = target_ids[target] + 1; 
+
+	int p;
+
+	while(1) 
+	{
+		if( recv_buf != NULL ) {
+			p = recv_buf[target].data[3];
+		}
+
+		if( p == 1 )
+			break;
+	}
+	fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
+	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
+	{ 
+		perror("bind isotp");
+		return 1; 
+	}
+
 	status_frame.data[STATUS_BYTE] = STATUS_UPLOADING; 
 	char *buf; 
-	char *filename = "logo.png";
 	FILE *f = fopen(filename, "r");
 	if( f == NULL )
 	{
-		fprintf(stderr, "Cannot open file \"%s\" - Exiting.\n", filename);
+		fprintf(stderr, "Cannot open file \"%s\" \n", filename);
 		return; 
 	}
 
@@ -297,13 +335,15 @@ void send_raw_isotp( )
 	// Setup a header to tell the target what it's going to be getting
 	// 
 	isotp_header_t *header = (isotp_header_t *)malloc((size_t)sizeof(isotp_header_t));  
+	// TODO: Check the return 
+	
 	header->magic_number = MAGIC_NUMBER; 
-	header->data_type = IMAGEDATA; 
+	header->data_type = data_type; 
 	header->total_size = size;
 	header->frame_count = frames;
-	snprintf(header->filename, 255, "test.png"); 
+	snprintf(header->filename, 255, filename); 
 	write( isotp_sock, header, sizeof(isotp_header_t)); 
-	free(header); 
+	free(header);
 
 	int datasent = 0; 
 	for( ; status_frame.data[2] >= 1; status_frame.data[2]-- ) 
@@ -409,14 +449,8 @@ void socketcan_read( void )
 				{ 
 					
 					fprintf(stderr, "[can-socketcan|read] target 0x%X has status %d\n", target_ids[n], frame.data[3]); 
-					// wish memcpy worked 
-					//
-					if( recv_buf[n].data[2] == 2 ) 
-					{
-						pthread_t g;
-						pthread_create( &g, NULL, socketcan_isotp_transmit, 1, NULL, 1); 
 
-					}
+					//
 					recv_buf[n].data[0] = frame.data[0];
 					recv_buf[n].data[1] = frame.data[1];
 					recv_buf[n].data[2] = frame.data[2];
@@ -439,34 +473,6 @@ void socketcan_read( void )
 	pthread_exit(s_read); 
 }
 
-void socketcan_isotp_transmit( int target, char *data, int size )
-{
-	addr_isotp.can_family = AF_CAN;
-	addr_isotp.can_ifindex = ifr.ifr_ifindex; 
-	addr_isotp.can_addr.tp.tx_id = status_id +1;  // One above status
-	addr_isotp.can_addr.tp.rx_id = target_ids[target] + 1; 
-
-	int p;
-
-	while(1) 
-	{
-		if( recv_buf != NULL ) {
-			p = recv_buf[target].data[3];
-		}
-
-		if( p == 1 )
-			break;
-	}
-	fprintf(stderr, " Tx: %d Rx: %d \n", addr_isotp.can_addr.tp.tx_id, addr_isotp.can_addr.tp.rx_id); 
-	if( bind(isotp_sock, (struct sockaddr *)&addr_isotp, sizeof(addr_can)) < 0) 
-	{ 
-		perror("bind isotp");
-		return 1; 
-	}
-
-	send_raw_isotp();
-
-}
 
 #define RECV_BUF_SIZE 5000 
 
@@ -501,7 +507,7 @@ void socketcan_isotp_receive( int target, char *dest, int *size )
 		return 1; 
 	}
 
-	FILE *output; 
+	FILE *output = NULL; 
 
 	// Header, <data>, [Footer?] 
 	do {
